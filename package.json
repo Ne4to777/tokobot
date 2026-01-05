@@ -1,0 +1,23 @@
+{
+  "name": "tokobot",
+  "version": "1.0.0",
+  "description": "Telegram bot for generating ideas using free AI models",
+  "main": "dist/api/webhook.js",
+  "scripts": {
+    "dev": "tsx watch api/webhook.ts",
+    "build": "tsc",
+    "start": "node dist/api/webhook.js"
+  },
+  "keywords": ["telegram", "bot", "ai", "ideas"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "telegraf": "^4.15.6"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
+
