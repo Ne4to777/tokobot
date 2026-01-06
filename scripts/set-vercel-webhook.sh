@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# Script: set-webhook.sh
-# Description: Sets the Telegram webhook to your deployment URL
-# Usage: ./scripts/set-webhook.sh <VERCEL_URL>
-# Requirements: .env file with BOT_TOKEN, curl, python3
+# Script: set-vercel-webhook.sh
+# Description: Automatically detects Vercel URL and sets Telegram webhook
+# Usage: ./scripts/set-vercel-webhook.sh
+# Requirements: .env file with BOT_TOKEN, Vercel CLI, curl, python3
 
 set -e  # Exit on error
 
-echo "🤖 Telegram Bot Webhook Setup"
-echo "=============================="
+echo "🚀 Vercel Webhook Setup (Auto-detect)"
+echo "====================================="
 echo ""
 
 # Load environment variables from .env
@@ -29,19 +29,34 @@ if [ -z "$BOT_TOKEN" ]; then
     exit 1
 fi
 
-# Check if VERCEL_URL is provided as argument
-if [ -z "$1" ]; then
-    echo "❌ Error: VERCEL_URL not provided"
+# Check if vercel CLI is installed
+if ! command -v vercel &> /dev/null; then
+    echo "❌ Error: Vercel CLI not found"
     echo ""
-    echo "Usage: ./scripts/set-webhook.sh <VERCEL_URL>"
+    echo "Install it with:"
+    echo "  npm install -g vercel"
     echo ""
-    echo "Example:"
-    echo "  ./scripts/set-webhook.sh https://your-project.vercel.app"
-    echo "  ./scripts/set-webhook.sh your-project.vercel.app"
+    echo "Or use the manual script:"
+    echo "  ./scripts/set-webhook.sh <YOUR_VERCEL_URL>"
     exit 1
 fi
 
-VERCEL_URL=$1
+echo "🔍 Detecting Vercel project URL..."
+
+# Get Vercel project info
+VERCEL_URL=$(vercel inspect --json 2>/dev/null | grep -o '"url":"[^"]*"' | head -1 | cut -d'"' -f4)
+
+# If auto-detect fails, ask user for URL
+if [ -z "$VERCEL_URL" ]; then
+    echo "⚠️  Could not auto-detect Vercel URL"
+    echo ""
+    read -p "Enter your Vercel URL (e.g., your-project.vercel.app): " VERCEL_URL
+    
+    if [ -z "$VERCEL_URL" ]; then
+        echo "❌ Error: No URL provided"
+        exit 1
+    fi
+fi
 
 # Remove https:// or http:// if present
 VERCEL_URL=${VERCEL_URL#https://}
@@ -50,6 +65,7 @@ VERCEL_URL=${VERCEL_URL#http://}
 # Construct webhook URL
 WEBHOOK_URL="https://${VERCEL_URL}/api/webhook"
 
+echo ""
 echo "🔗 Setting webhook to: $WEBHOOK_URL"
 echo ""
 
@@ -72,9 +88,9 @@ if echo "$RESPONSE" | grep -q '"ok":true'; then
     
     echo ""
     echo "🎉 Done! Test your bot in Telegram:"
-    echo "   /start"
-    echo "   /idea"
-    echo "   /contact"
+    echo "   /start   - Welcome message"
+    echo "   /idea    - Random AI business idea"
+    echo "   /contact - Lead generation form"
 else
     echo "❌ Failed to set webhook"
     echo ""

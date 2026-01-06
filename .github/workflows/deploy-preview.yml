@@ -1,0 +1,26 @@
+name: Deploy Preview
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  preview:
+    name: Deploy to Vercel Preview
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚀 Vercel will automatically deploy this PR to a preview URL. Check the Vercel bot comment for the link!'
+            })
+

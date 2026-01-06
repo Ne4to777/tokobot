@@ -1,15 +1,38 @@
-# 🤖 Tokobot - AI-First Business Idea Generator
+<div align="center">
 
-Телеграм-бот для генерации **AI-first** бизнес идей, где искусственный интеллект - это ядро продукта. Для небольших команд (2-5 человек). Бесплатный хостинг на Vercel с использованием Hugging Face Inference API.
+# 🤖 Tokobot
+
+**AI-First Business Idea Generator Bot**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-green.svg)](https://nodejs.org/)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-black.svg)](https://vercel.com/)
+[![CI](https://github.com/nybble777/tokobot/workflows/CI/badge.svg)](https://github.com/nybble777/tokobot/actions)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+Телеграм-бот для генерации **AI-first** бизнес идей, где искусственный
+интеллект - это ядро продукта. Для небольших команд (2-5 человек). Бесплатный
+хостинг на Vercel с использованием Hugging Face Inference API.
+
+[Features](#-возможности) • [Quick Start](docs/QUICKSTART.md) •
+[Documentation](docs/) • [Contributing](CONTRIBUTING.md) •
+[Development](docs/DEVELOPMENT.md)
+
+</div>
+
+---
 
 ## ✨ Возможности
 
 - 💡 Генерация AI-first бизнес идей по команде `/idea`
-- 🎯 Идеи в конкретных областях: `/idea sales`, `/idea marketing`, `/idea hr` и др.
+- 🎯 Идеи в конкретных областях: `/idea sales`, `/idea marketing`, `/idea hr` и
+  др.
 - 🤖 Интеграция с бесплатным AI (Hugging Face) или локальная база из 50+ идей
 - 🚀 Бесплатный хостинг на Vercel
 - 📝 TypeScript для безопасности типов
-- 🎯 **Все идеи про бизнес, где AI - ключевой элемент, без которого продукт невозможен**
+- 🎯 **Все идеи про бизнес, где AI - ключевой элемент, без которого продукт
+  невозможен**
 - 🔗 **Интеграция с Битрикс24 CRM** - автоматическое создание лидов из бота
 
 ## 🚀 Быстрый старт
@@ -30,13 +53,15 @@
 3. Создайте новый токен (Read access достаточно)
 4. Сохраните токен
 
-> **Примечание:** Бот работает и без Hugging Face токена, используя локальную генерацию идей.
+> **Примечание:** Бот работает и без Hugging Face токена, используя локальную
+> генерацию идей.
 
 ### 3. Деплой на Vercel
 
 #### Вариант A: Через GitHub (рекомендуется)
 
 1. Создайте репозиторий на GitHub и запушьте код:
+
 ```bash
 git init
 git add .
@@ -57,27 +82,32 @@ git push -u origin main
 #### Вариант B: Через Vercel CLI
 
 1. Установите Vercel CLI:
+
 ```bash
 npm install -g vercel
 ```
 
 2. Залогиньтесь:
+
 ```bash
 vercel login
 ```
 
 3. Деплойте проект:
+
 ```bash
 vercel
 ```
 
 4. Добавьте переменные окружения:
+
 ```bash
 vercel env add BOT_TOKEN
 vercel env add HUGGINGFACE_TOKEN
 ```
 
 5. Передеплойте с новыми переменными:
+
 ```bash
 vercel --prod
 ```
@@ -93,6 +123,7 @@ curl https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook?url=https://your-pr
 ```
 
 Замените:
+
 - `<YOUR_BOT_TOKEN>` - на токен вашего бота
 - `your-project.vercel.app` - на ваш Vercel URL
 
@@ -148,21 +179,22 @@ npm run build
 
 ```
 /idea
-🤖 AI-юрист для стартапов: модель обучена на тысячах договоров, 
-автоматически составляет NDA, контракты с подрядчиками и 
+🤖 AI-юрист для стартапов: модель обучена на тысячах договоров,
+автоматически составляет NDA, контракты с подрядчиками и
 инвестиционные документы
 
 /idea sales
-🎯 AI-SDR (Sales Development Rep): автономно ведет переписку с 
-входящими лидами, квалифицирует их и бронирует встречи в 
+🎯 AI-SDR (Sales Development Rep): автономно ведет переписку с
+входящими лидами, квалифицирует их и бронирует встречи в
 календаре менеджера
 
 /idea marketing
-📱 AI-креатор рекламных кампаний: генерирует креативы, тексты, 
+📱 AI-креатор рекламных кампаний: генерирует креативы, тексты,
 таргетинги и автоматически запускает A/B тесты во всех каналах
 ```
 
-**Особенность:** Все идеи про бизнес, где **AI - это не фича, а сам продукт**. Без AI/ML такой бизнес не может существовать.
+**Особенность:** Все идеи про бизнес, где **AI - это не фича, а сам продукт**.
+Без AI/ML такой бизнес не может существовать.
 
 ## 🏗️ Структура проекта
 
@@ -199,12 +231,13 @@ tokobot/
 
 ```typescript
 const response = await fetch(
-  "https://api-inference.huggingface.co/models/YOUR_MODEL_HERE",
+  "https://api-inference.huggingface.co/models/YOUR_MODEL_HERE"
   // ...
 );
 ```
 
 Популярные бесплатные модели:
+
 - `mistralai/Mistral-7B-Instruct-v0.2` (текущая)
 - `google/flan-t5-xxl`
 - `bigscience/bloom`
@@ -222,9 +255,13 @@ bot.command("yourcommand", async (ctx) => {
 
 ### Локальные идеи
 
-В файле `lib/ai.ts` в функции `generateLocalIdea()` находится база из 50+ AI-first бизнес идей, которые используются как fallback, если Hugging Face недоступен.
+В файле `lib/ai.ts` в функции `generateLocalIdea()` находится база из 50+
+AI-first бизнес идей, которые используются как fallback, если Hugging Face
+недоступен.
 
-Все идеи следуют принципу: **AI - это ядро продукта**, а не вспомогательная функция. Примеры:
+Все идеи следуют принципу: **AI - это ядро продукта**, а не вспомогательная
+функция. Примеры:
+
 - AI-юрист, который сам составляет договоры
 - AI-рекрутер, который проводит интервью
 - AI-бухгалтер, который полностью автоматизирует учет
@@ -236,19 +273,23 @@ bot.command("yourcommand", async (ctx) => {
 ### Быстрая настройка:
 
 1. **Получите webhook URL из Битрикс24:**
+
    - Приложения → Разработчикам → Входящий вебхук
    - Скопируйте URL
 
 2. **Добавьте в переменные окружения:**
+
    ```env
    BITRIX24_WEBHOOK=https://your-domain.bitrix24.ru/rest/1/xxxxx/
    ```
 
 3. **Используйте команду `/contact`** в боте для сбора лидов!
 
-**Подробная инструкция:** См. [BITRIX24_INTEGRATION.md](./BITRIX24_INTEGRATION.md)
+**Подробная инструкция:** См.
+[BITRIX24_INTEGRATION.md](docs/BITRIX24_INTEGRATION.md)
 
 ### Возможности:
+
 - ✅ Автоматическое создание лидов из Telegram
 - ✅ Квалификация лидов с помощью AI
 - ✅ Уведомления менеджерам
@@ -262,6 +303,7 @@ bot.command("yourcommand", async (ctx) => {
 ### Бот не отвечает
 
 1. Проверьте, что webhook установлен правильно:
+
 ```bash
 curl https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getWebhookInfo
 ```
@@ -286,15 +328,153 @@ curl https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getWebhookInfo
 2. Проверьте, что все переменные окружения установлены
 3. Проверьте логи билда в Vercel Dashboard
 
-## 📄 Лицензия
+## 🏛️ Архитектура
 
-MIT
+### Serverless Architecture
 
-## 🤝 Поддержка
+```
+Telegram → Webhook → Vercel Function → AI/CRM APIs
+                          ↓
+                    Response to User
+```
 
-Если у вас есть вопросы или предложения, создайте Issue в репозитории.
+### Key Components
+
+- **api/webhook.ts** - Entry point, handles Telegram webhooks
+- **lib/ai.ts** - AI idea generation with fallback logic
+- **lib/bitrix24.ts** - CRM integration layer
+
+### Development vs Production
+
+| Environment | Bot Mode     | Hosting | Config                |
+| ----------- | ------------ | ------- | --------------------- |
+| Development | Long Polling | Local   | `.env` file           |
+| Production  | Webhooks     | Vercel  | Environment Variables |
+
+### Data Flow
+
+1. User sends command in Telegram
+2. Telegram sends webhook to Vercel
+3. Vercel executes serverless function
+4. Bot processes command (AI/CRM/Local)
+5. Response sent back to Telegram
+6. User receives message
+
+## 🔒 Security Best Practices
+
+- ✅ Never commit `.env` files
+- ✅ Use environment variables for all secrets
+- ✅ Rotate tokens periodically
+- ✅ Limit Bitrix24 webhook permissions to minimum required
+- ✅ Validate user input before processing
+- ✅ Monitor logs for suspicious activity
+- ✅ Keep dependencies updated
+
+**For more details**, see [SECURITY.md](.github/SECURITY.md)
+
+## 📚 Документация
+
+> **📖 Вся документация находится в папке [`docs/`](docs/)** - см.
+> [полное оглавление](docs/README.md)
+
+### Getting Started
+
+- **[Quick Start Guide](docs/QUICKSTART.md)** ⚡ - Запуск за 5 минут
+- **[Development Guide](docs/DEVELOPMENT.md)** 💻 - Полное руководство
+  разработчика
+- **[Navigation Guide](docs/NAVIGATION_GUIDE.md)** 🧭 - Как найти нужный файл
+
+### Integration & Architecture
+
+- **[Bitrix24 Integration](docs/BITRIX24_INTEGRATION.md)** 🔗 - Интеграция с
+  Битрикс24 CRM
+- **[Architecture](docs/ARCHITECTURE.md)** 🏛️ - Архитектура системы
+- **[Project Structure](docs/PROJECT_STRUCTURE.md)** 📁 - Структура файлов
+
+### Contributing
+
+- **[Contributing Guidelines](CONTRIBUTING.md)** 🤝 - Как внести вклад в проект
+- **[Code of Conduct](.github/CODE_OF_CONDUCT.md)** 📜 - Правила сообщества
+
+### Reference
+
+- **[Changelog](CHANGELOG.md)** 📝 - История изменений
+- **[Security Policy](.github/SECURITY.md)** 🔒 - Политика безопасности
+- **[AI Development Guide](.github/AI_DEVELOPMENT_GUIDE.md)** 🤖 - Для
+  AI-агентов
+- **[Repository Setup](docs/REPOSITORY_SETUP.md)** 🛠️ - Настройка репозитория
+
+## 🤝 Contributing
+
+Мы приветствуем вклад от сообщества!
+
+- 📖 Прочитайте [Contributing Guide](CONTRIBUTING.md)
+- 🐛
+  [Report bugs](https://github.com/nybble777/tokobot/issues/new?template=bug_report.md)
+- 💡
+  [Request features](https://github.com/nybble777/tokobot/issues/new?template=feature_request.md)
+- 💬 [Start a discussion](https://github.com/nybble777/tokobot/discussions)
+
+### For AI Agents & Code Assistants
+
+This repository is optimized for AI-assisted development:
+
+- ✅ Comprehensive TypeScript types
+- ✅ Clear code structure and naming conventions
+- ✅ Well-documented functions with JSDoc
+- ✅ Conventional commits
+- ✅ Automated CI/CD workflows
+- ✅ Issue and PR templates
+
+## 📊 Project Status
+
+- ✅ Core bot functionality
+- ✅ AI idea generation
+- ✅ Bitrix24 CRM integration
+- ✅ Vercel deployment
+- ⏳ Unit tests (coming soon)
+- ⏳ E2E tests (coming soon)
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
+for details.
+
+## 👥 Contributors
+
+Thanks to all contributors who help improve Tokobot!
+
+<!-- ALL-CONTRIBUTORS-LIST:START -->
+<!-- Add contributors here -->
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+## 🙏 Acknowledgments
+
+- [Telegraf](https://github.com/telegraf/telegraf) - Telegram bot framework
+- [Hugging Face](https://huggingface.co/) - Free AI models
+- [Vercel](https://vercel.com/) - Serverless deployment
+- [Bitrix24](https://www.bitrix24.ru/) - CRM integration
+
+## 📧 Support & Contact
+
+- 🐛 **Bug reports**:
+  [Open an issue](https://github.com/nybble777/tokobot/issues)
+- 💡 **Feature requests**:
+  [Open an issue](https://github.com/nybble777/tokobot/issues)
+- 💬 **Questions**:
+  [Discussions](https://github.com/nybble777/tokobot/discussions)
+- 📧 **Email**: [Create issue for private matters]
 
 ---
 
-Сделано с ❤️ и TypeScript
+<div align="center">
 
+**Сделано с ❤️ и TypeScript**
+
+⭐ Star us on GitHub — it motivates us a lot!
+
+[Report Bug](https://github.com/nybble777/tokobot/issues) •
+[Request Feature](https://github.com/nybble777/tokobot/issues) •
+[Read Docs](CONTRIBUTING.md)
+
+</div>

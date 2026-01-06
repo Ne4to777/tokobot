@@ -1,0 +1,7 @@
+node_modules
+dist
+build
+.vercel
+coverage
+*.log
+package-lock.json

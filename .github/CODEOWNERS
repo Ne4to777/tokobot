@@ -1,0 +1,25 @@
+# Code owners are automatically requested for review when someone
+# opens a pull request that modifies code that they own.
+
+# Global owners
+* @nybble777
+
+# API and core logic
+/api/ @nybble777
+/lib/ @nybble777
+
+# Documentation
+*.md @nybble777
+/docs/ @nybble777
+
+# Configuration files
+*.json @nybble777
+*.yml @nybble777
+*.yaml @nybble777
+
+# GitHub workflows and automation
+/.github/ @nybble777
+
+# Scripts
+/scripts/ @nybble777
+

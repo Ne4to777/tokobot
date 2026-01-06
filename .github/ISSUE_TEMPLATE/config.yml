@@ -1,0 +1,12 @@
+blank_issues_enabled: false
+contact_links:
+  - name: ❓ Questions & Discussions
+    url: https://github.com/nybble777/tokobot/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 📚 Documentation
+    url: https://github.com/nybble777/tokobot/blob/main/README.md
+    about: Read the project documentation
+  - name: 💬 Telegram Support
+    url: https://t.me/tokobot
+    about: Get help directly in Telegram
+

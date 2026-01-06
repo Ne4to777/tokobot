@@ -1,0 +1,220 @@
+# Tokobot - AI-First Business Idea Generator
+
+## Project Overview
+This is a Telegram bot that generates AI-first business ideas and integrates with Bitrix24 CRM. The bot is deployed as a serverless function on Vercel.
+
+## Tech Stack
+- **Language:** TypeScript (strict mode)
+- **Runtime:** Node.js >=18.x
+- **Framework:** Telegraf (Telegram bot framework)
+- **AI:** Hugging Face API (optional), local fallback
+- **CRM:** Bitrix24 REST API integration
+- **Deployment:** Vercel (serverless functions)
+- **Module System:** ESM (type: "module")
+
+## Project Structure
+```
+tokobot/
+├── api/                    # Vercel serverless functions
+│   └── webhook.ts         # Main webhook handler
+├── lib/                   # Shared libraries
+│   ├── ai.ts             # AI idea generation service
+│   └── bitrix24.ts       # Bitrix24 CRM integration
+├── scripts/              # Helper scripts
+│   ├── set-webhook.sh    # Set Telegram webhook
+│   └── check-webhook.sh  # Check webhook status
+├── .github/              # GitHub templates and workflows
+└── docs/                 # Additional documentation
+```
+
+## Code Style & Best Practices
+
+### TypeScript
+- ✅ Always use explicit types, avoid `any`
+- ✅ Prefer interfaces over types for object shapes
+- ✅ Use async/await over promises
+- ✅ Add JSDoc comments for public functions
+- ✅ All strict TypeScript checks enabled
+
+### Naming Conventions
+- **Files:** kebab-case (e.g., `bitrix24-integration.ts`)
+- **Functions/Variables:** camelCase (e.g., `generateIdea`)
+- **Types/Interfaces:** PascalCase (e.g., `LeadData`)
+- **Constants:** UPPER_SNAKE_CASE (e.g., `BOT_TOKEN`)
+
+### Imports
+- ✅ Use ESM syntax (`import`/`export`)
+- ✅ Always include `.js` extension for local imports (required for ESM)
+- ✅ Group imports: external packages → local modules
+- ✅ Example: `import { generateIdea } from "../lib/ai.js";`
+
+### Error Handling
+- ✅ Always wrap API calls in try-catch
+- ✅ Log errors with context using console.error
+- ✅ Provide fallbacks where possible
+- ✅ Never expose sensitive data in errors
+
+### Environment Variables
+- ✅ Use `dotenv` for local development
+- ✅ Never commit `.env` files
+- ✅ Document all env vars in `env.example`
+- ✅ Validate required env vars at startup
+
+## Key Patterns
+
+### Telegram Command Handler
+```typescript
+bot.command("commandname", async (ctx) => {
+  try {
+    // Your logic here
+    await ctx.reply("Response");
+  } catch (error) {
+    console.error("Error:", error);
+    await ctx.reply("Error message");
+  }
+});
+```
+
+### API Integration (Bitrix24)
+```typescript
+const result = await response.json() as Bitrix24Response<Type>;
+if (result.error) {
+  throw new Error(`Bitrix24 error: ${result.error_description}`);
+}
+```
+
+### AI Generation Fallback
+```typescript
+// Always provide local fallback if AI API fails
+if (!AI_TOKEN) {
+  return generateLocalIdea(topic);
+}
+// Try AI API with fallback
+try {
+  return await generateWithAI(topic);
+} catch {
+  return generateLocalIdea(topic);
+}
+```
+
+## Development Workflow
+
+### Local Development
+- Use `npm run dev` for local testing (polling mode)
+- Bot token must be set in `.env`
+- Local bot uses long-polling, production uses webhooks
+
+### Making Changes
+1. Create feature branch: `feature/feature-name`
+2. Make changes with proper TypeScript types
+3. Test locally with `npm run dev`
+4. Commit with conventional commit message
+5. Push and create PR
+
+### Commit Messages
+Follow Conventional Commits:
+- `feat:` - New features
+- `fix:` - Bug fixes
+- `docs:` - Documentation only
+- `refactor:` - Code refactoring
+- `style:` - Formatting, missing semicolons, etc.
+- `test:` - Adding tests
+- `chore:` - Maintenance tasks
+
+Example: `feat(bitrix24): add lead creation endpoint`
+
+## Testing
+- Test bot commands manually in Telegram
+- Verify webhook endpoint returns proper JSON
+- Check Vercel logs for errors
+- Test Bitrix24 integration with real CRM
+
+## Deployment
+
+### Environment Variables (Vercel)
+Required:
+- `BOT_TOKEN` - Telegram bot token from @BotFather
+
+Optional:
+- `BITRIX24_WEBHOOK` - Bitrix24 webhook URL
+- `HUGGINGFACE_TOKEN` - Hugging Face API token
+
+### Deployment Process
+1. Push to `main` branch
+2. Vercel auto-deploys
+3. Set webhook: `curl https://api.telegram.org/bot<TOKEN>/setWebhook?url=<VERCEL_URL>/api/webhook`
+4. Test bot commands in Telegram
+
+## Important Notes
+
+### Vercel Specifics
+- Functions run in serverless environment
+- Webhook mode only (no polling in production)
+- 10-second timeout on free tier
+- Environment variables must be set in Vercel dashboard
+
+### Bot Architecture
+- **Development:** Polling mode (long-polling)
+- **Production:** Webhook mode (Telegram → Vercel)
+- Bot instance exports default async handler for Vercel
+- Development mode check: `if (ENVIRONMENT === "development")`
+
+### Security
+- Never log sensitive data (tokens, API keys)
+- Validate and sanitize user input
+- Use environment variables for secrets
+- `.env` is in `.gitignore` - never commit it
+
+## Adding New Features
+
+### New Command
+1. Add handler in `api/webhook.ts`
+2. Add TypeScript types if needed
+3. Update help command text
+4. Document in README.md
+5. Test thoroughly
+
+### New Integration
+1. Create new file in `lib/` directory
+2. Add proper TypeScript interfaces
+3. Implement error handling
+4. Add to `env.example` if needs config
+5. Document in appropriate .md file
+
+### New AI Model
+1. Update `lib/ai.ts`
+2. Keep local fallback
+3. Document model choice reasoning
+4. Test with various inputs
+
+## Common Issues & Solutions
+
+### "Cannot use import statement outside a module"
+- Ensure `"type": "module"` in package.json
+- Use `.js` extensions in imports
+
+### "BOT_TOKEN must be provided"
+- Check `.env` file exists locally
+- Check environment variables in Vercel
+
+### Bot not responding
+- Check webhook is set correctly
+- Check Vercel deployment logs
+- Verify BOT_TOKEN is correct
+
+### Bitrix24 401 error
+- Check webhook has CRM permissions
+- Verify webhook URL is correct
+- Test webhook with curl
+
+## Resources
+- Telegraf docs: https://telegraf.js.org/
+- Bitrix24 REST API: https://dev.1c-bitrix.ru/rest_help/
+- Vercel docs: https://vercel.com/docs
+- Hugging Face: https://huggingface.co/docs
+
+## Questions?
+- Check README.md for setup instructions
+- Check CONTRIBUTING.md for contribution guidelines
+- Check BITRIX24_INTEGRATION.md for CRM integration details
+- Create an issue on GitHub
