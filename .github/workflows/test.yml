@@ -31,9 +31,15 @@ jobs:
           npm --version
 
       - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Verify TypeScript installation
         run: |
-          npm ci --prefer-offline --no-audit
-          npm list typescript || npm install typescript
+          if ! npm list typescript >/dev/null 2>&1; then
+            echo "TypeScript not found, installing..."
+            npm install --save-dev typescript
+          fi
+          npx tsc --version
 
       - name: Run type check
         run: npm run typecheck
