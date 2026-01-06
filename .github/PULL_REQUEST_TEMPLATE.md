@@ -49,7 +49,7 @@ Related to #
 - [ ] I have tested my changes locally
 - [ ] I have tested the bot commands in Telegram
 - [ ] New and existing tests pass with my changes (if applicable)
-- [ ] TypeScript type checking passes (`npm run typecheck` or `npx tsc --noEmit`)
+- [ ] TypeScript type checking passes (`npm run typecheck`)
 
 ## 📸 Screenshots/Recordings
 
