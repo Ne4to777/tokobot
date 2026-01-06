@@ -18,24 +18,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
       - name: Run TypeScript type check
-        run: npx tsc --noEmit
+        run: npm run typecheck
 
-      - name: Check code formatting (if prettier is added)
-        run: |
-          if [ -f ".prettierrc" ]; then
-            echo "Checking code formatting..."
-            npx prettier --check .
-          else
-            echo "Prettier not configured, skipping..."
-          fi
-        continue-on-error: true
+      - name: Check code formatting
+        run: npm run format:check
 
   test:
     name: Run Tests
@@ -48,8 +42,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -70,8 +65,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: "npm"
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
