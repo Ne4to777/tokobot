@@ -1,19 +1,10 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "api/webhook.ts",
-      "use": "@vercel/node"
+      "source": "/api/webhook",
+      "destination": "/api/webhook.ts"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/webhook",
-      "dest": "api/webhook.ts"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }
 
