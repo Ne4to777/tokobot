@@ -23,6 +23,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Verify Node.js version
+        run: |
+          node --version
+          npm --version
 
       - name: Install dependencies
         run: |
