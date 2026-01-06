@@ -2,6 +2,7 @@
   "name": "tokobot",
   "version": "1.0.0",
   "description": "Telegram bot for generating ideas using free AI models",
+  "type": "module",
   "scripts": {
     "dev": "tsx watch api/webhook.ts"
   },

@@ -1,6 +1,6 @@
 import { Telegraf } from "telegraf";
-import { generateIdea } from "../lib/ai";
-import { createLead, addLeadComment } from "../lib/bitrix24";
+import { generateIdea } from "../lib/ai.js";
+import { createLead, addLeadComment } from "../lib/bitrix24.js";
 import dotenv from "dotenv";
 
 // Load environment variables from .env file
