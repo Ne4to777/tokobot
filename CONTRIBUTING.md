@@ -263,7 +263,7 @@ BREAKING CHANGE: API now returns {status, data} instead of raw data
 - [ ] Self-review of code completed
 - [ ] Comments added for complex logic
 - [ ] Documentation updated (README, etc.)
-- [ ] No TypeScript errors (`npx tsc --noEmit`)
+- [ ] No TypeScript errors (`npm run typecheck`)
 - [ ] Tested locally
 - [ ] No sensitive data in commits
 

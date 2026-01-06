@@ -75,7 +75,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for detailed architecture documentation
 ### Type checking
 
 ```bash
-npx tsc --noEmit
+npm run typecheck
 ```
 
 ### Test webhook locally
@@ -121,7 +121,7 @@ refactor: improve AI prompt handling
 
 1. Create a feature branch
 2. Make your changes
-3. Run type checks: `npx tsc --noEmit`
+3. Run type checks: `npm run typecheck`
 4. Commit with conventional commit messages
 5. Push and create PR
 6. Wait for CI checks to pass
@@ -161,7 +161,7 @@ Or in Vercel Dashboard → Project → Logs
 
 **TypeScript errors:**
 
-- Run `npx tsc --noEmit` to see all errors
+- Run `npm run typecheck` to see all errors
 - Check `tsconfig.json` configuration
 
 **Bitrix24 integration failing:**
