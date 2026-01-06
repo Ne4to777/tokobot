@@ -30,8 +30,7 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "npm run typecheck && npm run format:check",
-    "ci": "npm run lint && npm run test"
+    "lint": "npm run typecheck && npm run format:check"
   },
   "dependencies": {
     "dotenv": "16.4.7",
