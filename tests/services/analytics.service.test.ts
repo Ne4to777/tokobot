@@ -4,8 +4,8 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 import {
-    analyticsService,
-    EventType,
+  analyticsService,
+  EventType,
 } from "../../services/analytics.service.js";
 
 describe("AnalyticsService", () => {
@@ -198,4 +198,3 @@ describe("AnalyticsService", () => {
     });
   });
 });
-

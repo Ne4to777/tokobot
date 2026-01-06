@@ -5,7 +5,7 @@
 
 export async function generateIdea(topic?: string): Promise<string> {
   const HF_TOKEN = process.env.HUGGINGFACE_TOKEN;
-  
+
   if (!HF_TOKEN) {
     // Fallback to local generation if no token provided
     return generateLocalIdea(topic);
@@ -14,7 +14,7 @@ export async function generateIdea(topic?: string): Promise<string> {
   const basePrompt = `Generate a creative business idea for a small team (2-5 people) where Artificial Intelligence is THE CORE PRODUCT, not just a feature. 
 The AI should be the main value proposition and competitive advantage. The business model should be impossible without AI/ML at its center.`;
 
-  const prompt = topic 
+  const prompt = topic
     ? `${basePrompt} Focus on: ${topic}. Provide a concise description in 1-2 sentences.`
     : `${basePrompt} Provide a concise description in 1-2 sentences.`;
 
@@ -45,7 +45,7 @@ The AI should be the main value proposition and competitive advantage. The busin
     }
 
     const data = await response.json();
-    
+
     if (Array.isArray(data) && data.length > 0 && data[0].generated_text) {
       return cleanupAIResponse(data[0].generated_text);
     }
@@ -59,7 +59,7 @@ The AI should be the main value proposition and competitive advantage. The busin
 
 function cleanupAIResponse(text: string): string {
   // Clean up the AI response
-  return text.trim().split('\n')[0] || text.trim();
+  return text.trim().split("\n")[0] || text.trim();
 }
 
 function generateLocalIdea(topic?: string): string {
@@ -138,4 +138,3 @@ function generateLocalIdea(topic?: string): string {
 
   return ideas[Math.floor(Math.random() * ideas.length)];
 }
-

@@ -99,4 +99,3 @@ export class BotError extends Error {
     this.name = "BotError";
   }
 }
-

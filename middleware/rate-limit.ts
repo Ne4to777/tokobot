@@ -59,4 +59,3 @@ export const rateLimitMiddleware: MiddlewareFunction = async (ctx, next) => {
   userLimit.count++;
   await next();
 };
-

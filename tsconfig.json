@@ -13,4 +13,3 @@
   "include": ["api/**/*", "lib/**/*"],
   "exclude": ["node_modules"]
 }
-

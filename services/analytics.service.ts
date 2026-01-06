@@ -85,7 +85,10 @@ class AnalyticsServiceClass {
     // Update command counts
     if (event.type === EventType.COMMAND_USED && event.data?.command) {
       const command = event.data.command as string;
-      this.commandCounts.set(command, (this.commandCounts.get(command) || 0) + 1);
+      this.commandCounts.set(
+        command,
+        (this.commandCounts.get(command) || 0) + 1
+      );
     }
 
     logger.debug("Event tracked", {
@@ -310,4 +313,3 @@ class AnalyticsServiceClass {
 
 // Export singleton instance
 export const analyticsService = new AnalyticsServiceClass();
-

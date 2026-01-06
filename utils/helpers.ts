@@ -81,4 +81,3 @@ export function formatDate(date: Date): string {
     minute: "2-digit",
   }).format(date);
 }
-

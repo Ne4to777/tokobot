@@ -23,6 +23,7 @@ scripts/            → Helper scripts for webhook setup and testing
 ## 🧠 Important Patterns to Follow
 
 ### 1. Import Statements (CRITICAL)
+
 **Always use `.js` extension for local imports** (required for ESM):
 
 ```typescript
@@ -36,6 +37,7 @@ import { createLead } from "../lib/bitrix24";
 ```
 
 ### 2. TypeScript Types
+
 - **Always use explicit types**, avoid `any`
 - Prefer interfaces over types for object shapes
 - Add JSDoc comments for public functions
@@ -64,6 +66,7 @@ export async function createLead(data: any) {
 ```
 
 ### 3. Error Handling
+
 **Always wrap API calls in try-catch with fallbacks**:
 
 ```typescript
@@ -86,6 +89,7 @@ bot.command("idea", async (ctx) => {
 ```
 
 ### 4. Environment Variables
+
 **Always check for required env vars and provide helpful errors**:
 
 ```typescript
@@ -101,6 +105,7 @@ const bot = new Telegraf(BOT_TOKEN); // Will crash with unclear error
 ```
 
 ### 5. Vercel Serverless Function Pattern
+
 The webhook handler must be an async function that takes `req` and `res`:
 
 ```typescript
@@ -118,6 +123,7 @@ export default async (req: any, res: any) => {
 ## 🔄 Common Tasks
 
 ### Adding a New Bot Command
+
 1. Add handler in `api/webhook.ts`
 2. Follow error handling pattern
 3. Update `/help` command text
@@ -125,18 +131,21 @@ export default async (req: any, res: any) => {
 5. Update README.md
 
 ### Adding a New AI Model
+
 1. Update `lib/ai.ts`
 2. Keep local fallback intact
 3. Test with various inputs
 4. Document model choice in code comments
 
 ### Adding a New Bitrix24 Feature
+
 1. Add function to `lib/bitrix24.ts`
 2. Add TypeScript interfaces for API responses
 3. Handle 401/403 errors gracefully
 4. Update `BITRIX24_INTEGRATION.md`
 
 ### Making Configuration Changes
+
 1. Update `env.example` with new variables
 2. Update README deployment section
 3. Update Vercel environment variables documentation
@@ -144,21 +153,25 @@ export default async (req: any, res: any) => {
 ## 🐛 Common Pitfalls to Avoid
 
 ### ❌ DON'T: Forget `.js` extension in imports
+
 ```typescript
 import { generateIdea } from "../lib/ai"; // WILL FAIL IN PRODUCTION
 ```
 
 ### ❌ DON'T: Use `require()` or CommonJS syntax
+
 ```typescript
 const { Telegraf } = require("telegraf"); // WRONG - use import
 ```
 
 ### ❌ DON'T: Hardcode secrets
+
 ```typescript
 const BOT_TOKEN = "123456:ABC-DEF..."; // NEVER do this
 ```
 
 ### ❌ DON'T: Forget to load environment variables
+
 ```typescript
 // api/webhook.ts needs this at the top:
 import dotenv from "dotenv";
@@ -166,6 +179,7 @@ dotenv.config();
 ```
 
 ### ❌ DON'T: Use long-running processes in Vercel
+
 Vercel has a 10-second timeout (free tier). Keep operations quick.
 
 ## ✅ Best Practices Checklist
@@ -185,16 +199,19 @@ When making changes, ensure:
 ## 🧪 Testing Your Changes
 
 ### Local Testing
+
 ```bash
 npm run dev  # Test with polling mode
 ```
 
 ### Type Checking
+
 ```bash
 npm run typecheck  # Must pass before committing
 ```
 
 ### Format Checking
+
 ```bash
 npm run format:check  # Check formatting
 npm run format       # Auto-fix formatting
@@ -215,6 +232,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 **Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
 **Examples**:
+
 ```
 feat(ai): add GPT-4 support as alternative model
 fix(bitrix24): handle 401 errors gracefully
@@ -225,16 +243,19 @@ refactor(webhook): improve error handling
 ## 🔍 Debugging Tips
 
 ### Bot not responding?
+
 1. Check Vercel logs: `vercel logs`
 2. Verify webhook: `./scripts/check-webhook.sh`
 3. Check environment variables in Vercel dashboard
 
 ### TypeScript errors?
+
 1. Run `npm run typecheck` to see all errors
 2. Check for missing `.js` extensions in imports
 3. Verify tsconfig.json hasn't been modified
 
 ### Bitrix24 integration failing?
+
 1. Run `./scripts/test-bitrix-webhook.sh`
 2. Check webhook permissions in Bitrix24
 3. Verify BITRIX24_WEBHOOK format is correct
@@ -242,6 +263,7 @@ refactor(webhook): improve error handling
 ## 🤝 Working with Human Developers
 
 When collaborating:
+
 1. Always explain **why** you're making changes, not just what
 2. Point out potential issues or edge cases
 3. Suggest improvements to existing patterns
@@ -251,6 +273,7 @@ When collaborating:
 ## 📚 Key Documentation Files
 
 Before making changes, review:
+
 - `README.md` - Project overview and setup
 - `DEVELOPMENT.md` - Development workflow
 - `ARCHITECTURE.md` - System architecture
@@ -260,6 +283,7 @@ Before making changes, review:
 ## 🚀 Deployment Considerations
 
 Remember that this bot runs as **serverless functions** on Vercel:
+
 - No persistent state between invocations
 - 10-second timeout on free tier
 - Cold starts possible
@@ -279,4 +303,3 @@ Remember that this bot runs as **serverless functions** on Vercel:
 **This guide is maintained by the community. Feel free to suggest improvements!**
 
 Last updated: 2026-01-07
-

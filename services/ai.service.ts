@@ -4,9 +4,9 @@
 
 import { config, Constants } from "../config/index.js";
 import {
-    ErrorType,
-    GeneratedIdea,
-    IdeaGenerationOptions,
+  ErrorType,
+  GeneratedIdea,
+  IdeaGenerationOptions,
 } from "../types/index.js";
 import { createError } from "../utils/errors.js";
 import { randomElement, retry } from "../utils/helpers.js";
@@ -37,7 +37,9 @@ export class AIService {
   /**
    * Generate idea based on options
    */
-  async generateIdea(options: IdeaGenerationOptions = {}): Promise<GeneratedIdea> {
+  async generateIdea(
+    options: IdeaGenerationOptions = {}
+  ): Promise<GeneratedIdea> {
     const { topic, useAI = this.aiEnabled } = options;
 
     // Try AI if enabled and requested
@@ -45,7 +47,10 @@ export class AIService {
       try {
         return await this.generateWithAI(topic);
       } catch (error) {
-        logger.warn("AI generation failed, falling back to local", error as Error);
+        logger.warn(
+          "AI generation failed, falling back to local",
+          error as Error
+        );
       }
     }
 
@@ -61,13 +66,10 @@ export class AIService {
 
     const prompt = this.buildPrompt(topic);
 
-    const idea = await retry(
-      () => this.callHuggingFaceAPI(prompt),
-      {
-        maxAttempts: 2,
-        initialDelay: 1000,
-      }
-    );
+    const idea = await retry(() => this.callHuggingFaceAPI(prompt), {
+      maxAttempts: 2,
+      initialDelay: 1000,
+    });
 
     return {
       text: idea,
@@ -141,7 +143,8 @@ export class AIService {
     let ideas: readonly string[];
 
     if (topic && topic in IDEAS_DATABASE.topics) {
-      ideas = IDEAS_DATABASE.topics[topic as keyof typeof IDEAS_DATABASE.topics];
+      ideas =
+        IDEAS_DATABASE.topics[topic as keyof typeof IDEAS_DATABASE.topics];
     } else {
       ideas = IDEAS_DATABASE.general;
     }
@@ -186,4 +189,3 @@ export class AIService {
  * Singleton instance
  */
 export const aiService = new AIService();
-

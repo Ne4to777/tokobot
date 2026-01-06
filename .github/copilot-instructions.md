@@ -7,18 +7,21 @@ This is a Telegram bot built with TypeScript that generates AI-first business id
 ## Code Generation Guidelines
 
 ### TypeScript Standards
+
 - Always use explicit types, never `any` unless absolutely necessary
 - Use interfaces for object shapes, types for unions/intersections
 - Add JSDoc comments for all exported functions
 - Enable strict mode checks
 
 ### Architecture Patterns
+
 - Serverless-first: Functions should be stateless
 - Error handling: Always wrap external API calls in try-catch
 - Graceful degradation: Provide fallbacks for external services
 - Environment-driven configuration: Use env vars for all configs
 
 ### File Naming & Organization
+
 ```
 api/          - Vercel serverless endpoints
 lib/          - Shared utilities (ai.ts, bitrix24.ts)
@@ -27,6 +30,7 @@ scripts/      - Helper bash scripts
 ```
 
 ### Import Conventions
+
 ```typescript
 // External dependencies first
 import { Telegraf } from "telegraf";
@@ -40,15 +44,16 @@ import { createLead } from "../lib/bitrix24.js";
 ### Common Code Patterns
 
 #### Telegram Command Handler
+
 ```typescript
 bot.command("commandname", async (ctx) => {
   try {
     // Validate input
     const input = ctx.message.text.split(" ").slice(1).join(" ");
-    
+
     // Process logic
     const result = await processCommand(input);
-    
+
     // Send response
     await ctx.reply(result);
   } catch (error) {
@@ -59,6 +64,7 @@ bot.command("commandname", async (ctx) => {
 ```
 
 #### External API Call
+
 ```typescript
 async function callExternalAPI<T>(
   url: string,
@@ -77,7 +83,7 @@ async function callExternalAPI<T>(
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
 
-    return await response.json() as T;
+    return (await response.json()) as T;
   } catch (error) {
     console.error("API call failed:", error);
     return null;
@@ -86,6 +92,7 @@ async function callExternalAPI<T>(
 ```
 
 #### Environment Variable Loading
+
 ```typescript
 import dotenv from "dotenv";
 dotenv.config();
@@ -102,6 +109,7 @@ const OPTIONAL_ENV = process.env.OPTIONAL_VAR;
 ### Response Formats
 
 For user-facing messages:
+
 - Use emojis sparingly but effectively (🤖, 💡, ✅, ❌)
 - Keep responses concise and actionable
 - Provide clear next steps or alternatives on errors
@@ -110,6 +118,7 @@ For user-facing messages:
 ### Security Considerations
 
 1. **Never log sensitive data**
+
 ```typescript
 // ❌ Bad
 console.log(`Token: ${process.env.BOT_TOKEN}`);
@@ -119,16 +128,25 @@ console.log("Bot initialized successfully");
 ```
 
 2. **Validate user input**
+
 ```typescript
 // ✅ Good
 const topic = input.toLowerCase().trim();
-const validTopics = ["sales", "marketing", "hr", "product", "support", "finance"];
+const validTopics = [
+  "sales",
+  "marketing",
+  "hr",
+  "product",
+  "support",
+  "finance",
+];
 if (topic && !validTopics.includes(topic)) {
   return "Invalid topic. Choose from: sales, marketing, hr, product, support, finance";
 }
 ```
 
 3. **Sanitize data before external calls**
+
 ```typescript
 // ✅ Good
 const sanitizedName = userInput.replace(/[<>]/g, "").trim();
@@ -137,6 +155,7 @@ const sanitizedName = userInput.replace(/[<>]/g, "").trim();
 ### Testing Approach
 
 When generating test code:
+
 - Focus on edge cases and error scenarios
 - Mock external API calls
 - Test both success and failure paths
@@ -145,6 +164,7 @@ When generating test code:
 ### Documentation Requirements
 
 When adding new features:
+
 1. Update relevant README sections
 2. Add JSDoc comments to functions
 3. Update CHANGELOG.md
@@ -164,6 +184,7 @@ When adding new features:
 Types: feat, fix, docs, style, refactor, test, chore
 
 Examples:
+
 - `feat(ai): add support for GPT-4 provider`
 - `fix(bitrix24): handle 401 authentication errors`
 - `docs(readme): update deployment instructions`
@@ -171,6 +192,7 @@ Examples:
 ### Error Messages
 
 User-facing errors should be:
+
 - Friendly and non-technical
 - Actionable (what can they do?)
 - Consistent in tone
@@ -180,7 +202,9 @@ User-facing errors should be:
 await ctx.reply("Error: null pointer exception in handler");
 
 // ✅ Good
-await ctx.reply("Sorry, I couldn't process that. Please try again or use /help for available commands.");
+await ctx.reply(
+  "Sorry, I couldn't process that. Please try again or use /help for available commands."
+);
 ```
 
 ### Performance Considerations
@@ -193,16 +217,19 @@ await ctx.reply("Sorry, I couldn't process that. Please try again or use /help f
 ### Specific to This Project
 
 #### AI Idea Generation
+
 - All ideas must be "AI-first" (AI is the core product, not a feature)
 - Maintain consistency in idea format
 - Provide both AI-generated and local fallback options
 
 #### Bitrix24 Integration
+
 - Always check if webhook is configured before CRM calls
 - Handle rate limits gracefully
 - Log CRM operations for debugging
 
 #### Vercel Deployment
+
 - Export default async function for serverless endpoints
 - Handle both webhook (production) and polling (development) modes
 - Keep function execution time under 10 seconds
@@ -233,6 +260,7 @@ npm run dev
 ## AI Assistant Tips
 
 When suggesting code:
+
 1. Match the existing code style
 2. Include proper error handling
 3. Add TypeScript types
@@ -241,12 +269,14 @@ When suggesting code:
 6. Test suggestions before providing them
 
 When fixing bugs:
+
 1. Identify root cause
 2. Suggest minimal change
 3. Consider edge cases
 4. Update tests if applicable
 
 When adding features:
+
 1. Check if similar patterns exist
 2. Follow existing architecture
 3. Consider performance impact
@@ -255,4 +285,3 @@ When adding features:
 ---
 
 **Goal**: Maintain high code quality, consistency, and developer experience while building a reliable serverless Telegram bot.
-

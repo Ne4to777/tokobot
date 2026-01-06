@@ -69,26 +69,34 @@ When deploying Tokobot:
 ## Known Security Considerations
 
 ### Telegram Bot Token
+
 The bot token provides full access to your bot. If compromised:
+
 1. Revoke the token via @BotFather
 2. Generate a new token
 3. Update the token in Vercel environment variables
 4. Redeploy the application
 
 ### Webhook URL
+
 The webhook URL should be kept secret. If exposed:
+
 1. Deploy a new version (generates new URL)
 2. Update the webhook with Telegram
 3. Monitor logs for unauthorized requests
 
 ### User Input
+
 All user input is sanitized before:
+
 - Sending to external APIs
 - Storing in Bitrix24
 - Logging to console
 
 ### Rate Limiting
+
 The bot relies on Telegram's built-in rate limiting. For additional protection:
+
 - Monitor Vercel function invocations
 - Set up alerts for unusual activity
 - Consider implementing custom rate limiting for specific commands
@@ -96,6 +104,7 @@ The bot relies on Telegram's built-in rate limiting. For additional protection:
 ## Security Updates
 
 Security updates will be released as PATCH versions (e.g., 1.0.x → 1.0.y) and announced via:
+
 - GitHub Security Advisories
 - Release notes
 - CHANGELOG.md
@@ -116,4 +125,3 @@ For security concerns, create a private security advisory on GitHub or contact m
 ---
 
 Thank you for helping keep Tokobot and its users safe! 🔒
-

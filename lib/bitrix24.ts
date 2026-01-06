@@ -45,8 +45,12 @@ export async function createLead(data: LeadData): Promise<any> {
         fields: {
           TITLE: data.title,
           NAME: data.name || "Telegram User",
-          PHONE: data.phone ? [{ VALUE: data.phone, VALUE_TYPE: "WORK" }] : undefined,
-          EMAIL: data.email ? [{ VALUE: data.email, VALUE_TYPE: "WORK" }] : undefined,
+          PHONE: data.phone
+            ? [{ VALUE: data.phone, VALUE_TYPE: "WORK" }]
+            : undefined,
+          EMAIL: data.email
+            ? [{ VALUE: data.email, VALUE_TYPE: "WORK" }]
+            : undefined,
           COMMENTS: data.comments || "",
           SOURCE_ID: data.source || "TELEGRAM",
           // Дополнительные поля
@@ -60,8 +64,8 @@ export async function createLead(data: LeadData): Promise<any> {
       throw new Error(`Bitrix24 API error: ${response.status}`);
     }
 
-    const result = await response.json() as Bitrix24Response<number>;
-    
+    const result = (await response.json()) as Bitrix24Response<number>;
+
     if (result.error) {
       throw new Error(`Bitrix24 error: ${result.error_description}`);
     }
@@ -77,7 +81,10 @@ export async function createLead(data: LeadData): Promise<any> {
 /**
  * Добавить комментарий к лиду
  */
-export async function addLeadComment(leadId: number, comment: string): Promise<void> {
+export async function addLeadComment(
+  leadId: number,
+  comment: string
+): Promise<void> {
   if (!BITRIX24_WEBHOOK) return;
 
   try {
@@ -117,8 +124,8 @@ export async function updateLead(leadId: number, fields: any): Promise<void> {
       }),
     });
 
-    const result = await response.json() as Bitrix24Response;
-    
+    const result = (await response.json()) as Bitrix24Response;
+
     if (result.error) {
       throw new Error(`Bitrix24 error: ${result.error_description}`);
     }
@@ -137,9 +144,11 @@ export async function getLead(leadId: number): Promise<any> {
   if (!BITRIX24_WEBHOOK) return null;
 
   try {
-    const response = await fetch(`${BITRIX24_WEBHOOK}/crm.lead.get.json?id=${leadId}`);
-    const result = await response.json() as Bitrix24Response;
-    
+    const response = await fetch(
+      `${BITRIX24_WEBHOOK}/crm.lead.get.json?id=${leadId}`
+    );
+    const result = (await response.json()) as Bitrix24Response;
+
     if (result.error) {
       throw new Error(`Bitrix24 error: ${result.error_description}`);
     }
@@ -178,8 +187,10 @@ export async function createTask(data: {
       }),
     });
 
-    const result = await response.json() as Bitrix24Response<{ task: { id: number } }>;
-    
+    const result = (await response.json()) as Bitrix24Response<{
+      task: { id: number };
+    }>;
+
     if (result.error) {
       throw new Error(`Bitrix24 error: ${result.error_description}`);
     }
@@ -191,4 +202,3 @@ export async function createTask(data: {
     throw error;
   }
 }
-

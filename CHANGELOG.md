@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.1] - 2026-01-07
 
 ### Changed
+
 - **Documentation reorganization** - Moved all detailed docs to `docs/` folder
   - Created `docs/README.md` as documentation hub
   - Moved 8 documentation files to `docs/`
@@ -21,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2026-01-07
 
 ### Added
+
 - Repository organization and best practices documentation
 - `.editorconfig` for consistent code style across editors
 - Prettier configuration for code formatting
@@ -37,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved `.gitignore` with comprehensive exclusions
 
 ### Changed
+
 - Enhanced project structure for better maintainability
 - Updated documentation for AI-agent friendly development
 - Improved npm scripts for code quality checks
@@ -44,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2026-01-06
 
 ### Added
+
 - Initial release of Tokobot
 - AI-first business idea generation with 50+ local ideas
 - Six categories: sales, marketing, hr, product, support, finance
@@ -65,6 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Helper scripts for webhook management
 
 ### Technical Details
+
 - Node.js >= 18.x
 - Telegraf 4.15.6 for Telegram Bot API
 - TypeScript 5.3+ with strict mode
@@ -74,6 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - REST API integration with Bitrix24
 
 ### Documentation
+
 - README.md with setup and deployment instructions
 - BITRIX24_INTEGRATION.md with CRM integration guide
 - env.example with required environment variables

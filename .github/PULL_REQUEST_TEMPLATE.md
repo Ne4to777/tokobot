@@ -1,13 +1,18 @@
 ## 📋 Description
+
 <!-- Provide a brief description of the changes in this PR -->
 
 ## 🔗 Related Issues
+
 <!-- Link to related issues using #issue_number -->
+
 Fixes #
 Related to #
 
 ## 🎯 Type of Change
+
 <!-- Mark the relevant option with an 'x' -->
+
 - [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
 - [ ] ✨ New feature (non-breaking change which adds functionality)
 - [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
@@ -18,18 +23,22 @@ Related to #
 - [ ] 🧪 Test update
 
 ## 🧪 Testing
+
 <!-- Describe the tests you ran and how to reproduce them -->
 
 **Test Configuration:**
+
 - Bot environment: [Local/Vercel Preview]
 - Commands tested: `/start`, `/idea`, etc.
 
 **Testing steps:**
+
 1. Step 1
 2. Step 2
 3. Step 3
 
 ## ✅ Checklist
+
 <!-- Mark completed items with an 'x' -->
 
 - [ ] My code follows the project's style guidelines
@@ -43,13 +52,17 @@ Related to #
 - [ ] TypeScript type checking passes (`npm run typecheck` or `npx tsc --noEmit`)
 
 ## 📸 Screenshots/Recordings
+
 <!-- If applicable, add screenshots or screen recordings -->
 
 ## 📝 Additional Notes
+
 <!-- Any additional information that reviewers should know -->
 
 ## 🚀 Deployment Notes
+
 <!-- Any special considerations for deployment -->
+
 - [ ] Requires environment variable updates
 - [ ] Requires Bitrix24 webhook changes
 - [ ] Requires Telegram webhook reset
@@ -58,7 +71,7 @@ Related to #
 ---
 
 **For Reviewers:**
+
 - Please test the bot commands in Telegram
 - Verify TypeScript types are correct
 - Check for any security concerns (API keys, tokens, etc.)
-

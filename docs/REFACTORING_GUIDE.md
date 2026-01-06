@@ -12,7 +12,7 @@
 ✅ **Масштабируемость** - легко добавлять новые команды и сервисы  
 ✅ **Тестируемость** - изолированные модули легко тестировать  
 ✅ **Читаемость** - понятная структура для новых разработчиков  
-✅ **Типобезопасность** - строгая типизация TypeScript  
+✅ **Типобезопасность** - строгая типизация TypeScript
 
 ---
 
@@ -64,6 +64,7 @@ tokobot/
 ## 🔄 Миграция
 
 ### Текущий статус
+
 - ✅ Новая архитектура создана
 - ⏳ Старый код сохранен (backward compatibility)
 - ⏳ Нужно переключиться на новый webhook
@@ -71,6 +72,7 @@ tokobot/
 ### Как переключиться
 
 1. **Обновите package.json**:
+
 ```json
 {
   "scripts": {
@@ -81,11 +83,13 @@ tokobot/
 ```
 
 2. **Для local тестирования**:
+
 ```bash
 npm run dev  # Использует refactored версию
 ```
 
 3. **Для Vercel деплоя**:
+
 ```bash
 # Переименуйте файлы
 mv api/webhook.ts api/webhook.old.ts
@@ -101,6 +105,7 @@ mv api/webhook.refactored.ts api/webhook.ts
 ### 1. Types (`types/index.ts`)
 
 Централизованные TypeScript типы:
+
 - `BotContext` - контекст бота с расширениями
 - `CommandHandler` - тип функции-обработчика команды
 - `IdeaGenerationOptions` - опции генерации идей
@@ -108,6 +113,7 @@ mv api/webhook.refactored.ts api/webhook.ts
 - `BotError` - кастомный класс ошибок
 
 **Пример использования**:
+
 ```typescript
 import { CommandHandler, BotContext } from "../types/index.js";
 
@@ -119,12 +125,14 @@ export const myHandler: CommandHandler = async (ctx: BotContext) => {
 ### 2. Config (`config/index.ts`)
 
 Централизованная конфигурация:
+
 - Валидация environment variables
 - Константы приложения
 - Настройки AI модели
 - Rate limiting параметры
 
 **Пример**:
+
 ```typescript
 import { config, Constants } from "../config/index.js";
 
@@ -135,6 +143,7 @@ console.log(Constants.AI_MODEL); // "mistralai/Mistral-7B-Instruct-v0.2"
 ### 3. Utils
 
 #### Logger (`utils/logger.ts`)
+
 ```typescript
 import { createLogger } from "../utils/logger.js";
 
@@ -147,6 +156,7 @@ logger.debug("Debug message"); // Only in development
 ```
 
 #### Error Handler (`utils/errors.ts`)
+
 ```typescript
 import { createError, handleError, ErrorType } from "../utils/errors.js";
 
@@ -162,6 +172,7 @@ try {
 ```
 
 #### Helpers (`utils/helpers.ts`)
+
 ```typescript
 import { retry, randomElement, truncate } from "../utils/helpers.js";
 
@@ -180,21 +191,22 @@ const short = truncate(longText, 100);
 Middleware выполняются в порядке регистрации:
 
 ```typescript
-bot.use(errorHandlerMiddleware);  // 1. Catches all errors
-bot.use(loggingMiddleware);        // 2. Logs requests
-bot.use(rateLimitMiddleware);      // 3. Rate limiting
+bot.use(errorHandlerMiddleware); // 1. Catches all errors
+bot.use(loggingMiddleware); // 2. Logs requests
+bot.use(rateLimitMiddleware); // 3. Rate limiting
 ```
 
 **Создание своего middleware**:
+
 ```typescript
 import { MiddlewareFunction } from "../types/index.js";
 
 export const myMiddleware: MiddlewareFunction = async (ctx, next) => {
   // Before
   console.log("Before command");
-  
+
   await next(); // Call next middleware/handler
-  
+
   // After
   console.log("After command");
 };
@@ -203,6 +215,7 @@ export const myMiddleware: MiddlewareFunction = async (ctx, next) => {
 ### 5. Services
 
 #### AIService (`services/ai.service.ts`)
+
 ```typescript
 import { aiService } from "../services/ai.service.js";
 
@@ -216,6 +229,7 @@ const topics = aiService.getAvailableTopics();
 ```
 
 #### CRMService (`services/crm.service.ts`)
+
 ```typescript
 import { crmService } from "../services/crm.service.js";
 
@@ -227,7 +241,7 @@ if (crmService.isEnabled()) {
     phone: "+1234567890",
     email: "john@example.com",
   });
-  
+
   // Add comment
   await crmService.addLeadComment(leadId, "Additional info");
 }
@@ -246,7 +260,7 @@ const logger = createLogger("Handler:MyCommand");
 
 export const myCommandHandler: CommandHandler = async (ctx) => {
   logger.info("Command received");
-  
+
   try {
     // Your logic
     await ctx.reply("Response");
@@ -270,6 +284,7 @@ bot.command("mycommand", myCommandHandler);
 ### Добавить новую команду
 
 1. **Создайте handler**:
+
 ```typescript
 // handlers/new-feature.handler.ts
 import { CommandHandler } from "../types/index.js";
@@ -280,12 +295,14 @@ export const newFeatureHandler: CommandHandler = async (ctx) => {
 ```
 
 2. **Экспортируйте**:
+
 ```typescript
 // handlers/index.ts
 export { newFeatureHandler } from "./new-feature.handler.js";
 ```
 
 3. **Зарегистрируйте**:
+
 ```typescript
 // api/webhook.refactored.ts
 import { newFeatureHandler } from "../handlers/index.js";
@@ -353,16 +370,16 @@ describe("IdeaHandler", () => {
 
 ## 📊 Преимущества новой архитектуры
 
-| Аспект | Старая архитектура | Новая архитектура |
-|--------|-------------------|-------------------|
-| **Файлов** | 1 большой | Много маленьких |
-| **Строк в файле** | 195+ | 20-100 |
-| **Добавить команду** | Править 1 большой файл | Создать 1 маленький |
-| **Тестирование** | Сложно | Легко (isolated) |
-| **Повторное использование** | Нет | Да (сервисы) |
-| **Типизация** | Частичная | Полная |
-| **Error handling** | Везде try-catch | Централизованный |
-| **Логирование** | console.log | Структурированное |
+| Аспект                      | Старая архитектура     | Новая архитектура   |
+| --------------------------- | ---------------------- | ------------------- |
+| **Файлов**                  | 1 большой              | Много маленьких     |
+| **Строк в файле**           | 195+                   | 20-100              |
+| **Добавить команду**        | Править 1 большой файл | Создать 1 маленький |
+| **Тестирование**            | Сложно                 | Легко (isolated)    |
+| **Повторное использование** | Нет                    | Да (сервисы)        |
+| **Типизация**               | Частичная              | Полная              |
+| **Error handling**          | Везде try-catch        | Централизованный    |
+| **Логирование**             | console.log            | Структурированное   |
 
 ---
 
@@ -379,4 +396,3 @@ describe("IdeaHandler", () => {
 **Вопросы?** См. [DEVELOPMENT.md](DEVELOPMENT.md) или создайте issue.
 
 Последнее обновление: 2026-01-07
-

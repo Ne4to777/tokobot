@@ -154,15 +154,18 @@ Or in Vercel Dashboard → Project → Logs
 ### Common issues
 
 **Bot not responding:**
+
 - Check `BOT_TOKEN` is set correctly
 - Verify webhook is set: `./scripts/check-webhook.sh`
 - Check Vercel deployment status
 
 **TypeScript errors:**
+
 - Run `npx tsc --noEmit` to see all errors
 - Check `tsconfig.json` configuration
 
 **Bitrix24 integration failing:**
+
 - Verify webhook has correct permissions (CRM access)
 - Test webhook: `./scripts/test-bitrix-webhook.sh`
 
@@ -189,6 +192,7 @@ Or in Vercel Dashboard → Project → Logs
 - Group imports: external packages → local modules
 
 Example:
+
 ```typescript
 import { Telegraf } from "telegraf";
 import { generateIdea } from "../lib/ai.js";
@@ -202,6 +206,7 @@ import { generateIdea } from "../lib/ai.js";
 - **Review dependencies** - check for known vulnerabilities
 
 Run security audit:
+
 ```bash
 npm audit
 ```
@@ -213,6 +218,7 @@ npm audit
 Deployment is automatic on push to `main` branch.
 
 Manual deployment:
+
 ```bash
 vercel --prod
 ```
@@ -222,9 +228,11 @@ vercel --prod
 Set in Vercel Dashboard → Project → Settings → Environment Variables
 
 Required:
+
 - `BOT_TOKEN`
 
 Optional:
+
 - `BITRIX24_WEBHOOK`
 - `HUGGINGFACE_TOKEN`
 
@@ -248,4 +256,3 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for contribution guidelines.
 ---
 
 Happy coding! 🚀
-

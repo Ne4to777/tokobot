@@ -32,6 +32,7 @@ This project adheres to a Code of Conduct that all contributors are expected to 
 ### Setup Development Environment
 
 1. **Fork the repository**
+
    ```bash
    # Click "Fork" on GitHub, then clone your fork
    git clone https://github.com/YOUR_USERNAME/tokobot.git
@@ -39,17 +40,20 @@ This project adheres to a Code of Conduct that all contributors are expected to 
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Create `.env` file**
+
    ```bash
    cp env.example .env
    # Edit .env and add your BOT_TOKEN from @BotFather
    ```
 
 4. **Run locally**
+
    ```bash
    npm run dev
    ```
@@ -128,6 +132,7 @@ async function generateIdea(topic) {
 ```
 
 **Rules:**
+
 - Always use explicit types
 - No `any` types (use `unknown` if type is truly unknown)
 - Prefer interfaces over types for objects
@@ -153,6 +158,7 @@ import { generateIdea } from "../lib/ai";
 ```
 
 **Order:**
+
 1. External packages
 2. Local modules
 3. Types (if separate)
@@ -221,6 +227,7 @@ export async function gen(t) {
 ### Scope
 
 Optional, indicates what part is affected:
+
 - `bitrix24` - Bitrix24 integration
 - `ai` - AI generation
 - `bot` - Bot commands/logic
@@ -263,6 +270,7 @@ BREAKING CHANGE: API now returns {status, data} instead of raw data
 ### PR Title
 
 Follow commit message format:
+
 ```
 feat(bitrix24): add lead qualification feature
 ```
@@ -271,20 +279,24 @@ feat(bitrix24): add lead qualification feature
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Testing
+
 How was this tested?
 
 ## Screenshots (if applicable)
 
 ## Checklist
+
 - [ ] Code follows style guidelines
 - [ ] Self-reviewed code
 - [ ] Commented complex code
@@ -305,6 +317,7 @@ How was this tested?
 ### Manual Testing
 
 1. **Start bot locally:**
+
    ```bash
    npm run dev
    ```
@@ -333,6 +346,7 @@ How was this tested?
 ### When to Update Docs
 
 Update documentation when you:
+
 - Add new features
 - Change existing behavior
 - Add new commands
@@ -349,24 +363,24 @@ Update documentation when you:
 
 ### Documentation Style
 
-```typescript
+````typescript
 /**
  * Brief one-line description
- * 
+ *
  * More detailed explanation if needed.
  * Can span multiple lines.
- * 
+ *
  * @param paramName - Description of parameter
  * @returns Description of return value
  * @throws Error type and when it's thrown
- * 
+ *
  * @example
  * ```typescript
  * const idea = await generateIdea("sales");
  * console.log(idea);
  * ```
  */
-```
+````
 
 ## ❓ Questions?
 
@@ -376,6 +390,6 @@ Update documentation when you:
 
 ## 🙏 Thank You!
 
-Your contributions make Tokobot better for everyone. We appreciate your time and effort! 
+Your contributions make Tokobot better for everyone. We appreciate your time and effort!
 
 Happy coding! 🚀

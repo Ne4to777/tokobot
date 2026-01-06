@@ -156,13 +156,12 @@ Telegram              сообщения
 ```typescript
 export default async (req: any, res: any) => {
   // Это функция вызывается Vercel при каждом POST от Telegram
-  
+
   if (req.method === "POST") {
     // Telegram webhook - обрабатываем сообщение
     await bot.handleUpdate(req.body, res);
     res.status(200).json({ ok: true });
-  } 
-  else if (req.method === "GET") {
+  } else if (req.method === "GET") {
     // Health check - для проверки что бот работает
     res.status(200).json({
       status: "ok",
@@ -170,10 +169,11 @@ export default async (req: any, res: any) => {
       version: "2.0.0",
     });
   }
-}
+};
 ```
 
 **Что происходит:**
+
 1. Vercel получает POST от Telegram
 2. Вызывает эту функцию с `req` и `res`
 3. `bot.handleUpdate()` передает сообщение в Telegraf
@@ -184,14 +184,15 @@ export default async (req: any, res: any) => {
 ### 2. Middleware Chain (строки 31-34)
 
 ```typescript
-bot.use(errorHandlerMiddleware);   // 1️⃣
-bot.use(loggingMiddleware);         // 2️⃣
-bot.use(rateLimitMiddleware);       // 3️⃣
+bot.use(errorHandlerMiddleware); // 1️⃣
+bot.use(loggingMiddleware); // 2️⃣
+bot.use(rateLimitMiddleware); // 3️⃣
 ```
 
 **Порядок выполнения КРИТИЧЕН!**
 
 #### 1️⃣ Error Handler (первый)
+
 ```typescript
 // middleware/error-handler.ts
 export const errorHandlerMiddleware = async (ctx, next) => {
@@ -202,41 +203,47 @@ export const errorHandlerMiddleware = async (ctx, next) => {
   }
 };
 ```
+
 **Зачем первый:** Оборачивает ВСЕ остальные middleware и handlers в try-catch.
 
 #### 2️⃣ Logging (второй)
+
 ```typescript
 // middleware/logging.ts
 export const loggingMiddleware = async (ctx, next) => {
   logger.info(`Incoming message from user ${userId}`);
   const startTime = Date.now();
-  
+
   await next(); // ← Выполняет handler
-  
+
   const duration = Date.now() - startTime;
   logger.debug(`Processed in ${duration}ms`);
 };
 ```
+
 **Зачем второй:** Логирует каждый запрос с timing.
 
 #### 3️⃣ Rate Limit (третий)
+
 ```typescript
 // middleware/rate-limit.ts
 export const rateLimitMiddleware = async (ctx, next) => {
   const userLimit = rateLimitStore.get(userId);
-  
+
   if (userLimit.count >= MAX_REQUESTS) {
     await ctx.reply("⏱️ Слишком много запросов");
     return; // ← НЕ вызывает next() = прерывает chain
   }
-  
+
   userLimit.count++;
   await next(); // ← Продолжает если лимит не превышен
 };
 ```
+
 **Зачем третий:** Защита от спама перед выполнением handler.
 
 **Визуально:**
+
 ```
 Request → Error Handler (try) →
           Logging (start timer) →
@@ -254,10 +261,12 @@ bot.command("start", startHandler);
 ```
 
 **Что это делает:**
+
 - Регистрирует handler для команды `/start`
 - Когда пользователь пишет `/start` → Telegraf вызывает `startHandler`
 
 **Handler structure:**
+
 ```typescript
 // handlers/start.handler.ts
 export const startHandler: CommandHandler = async (ctx) => {
@@ -273,10 +282,12 @@ bot.on("text", handleContactFlow);
 ```
 
 **Когда срабатывает:**
+
 - На ЛЮБОЕ текстовое сообщение (не команду)
 - Используется для multi-step flow (contact form)
 
 **Пример flow:**
+
 ```
 User: /contact
 Bot: Как вас зовут?
@@ -297,6 +308,7 @@ bot.on("message", async (ctx) => {
 ```
 
 **Когда срабатывает:**
+
 - Если сообщение не подходит под предыдущие handlers
 - Fallback для всех других сообщений
 
@@ -309,6 +321,7 @@ if (config.environment === "development") {
 ```
 
 **Как работает:**
+
 - Проверяет `NODE_ENV`
 - Если `"development"` → запускает polling
 - Если НЕ development → просто экспортирует функцию
@@ -361,6 +374,7 @@ if (config.environment === "development") {
 ## 💡 Ключевые концепции
 
 ### 1. Middleware Chain
+
 Middleware выполняются **последовательно** в порядке регистрации.
 
 ```typescript
@@ -370,38 +384,43 @@ bot.use(middlewareC); // Выполнится третьим
 ```
 
 ### 2. next() Function
+
 `await next()` передает управление следующему middleware/handler.
 
 ```typescript
 export const myMiddleware = async (ctx, next) => {
   // До handler
   console.log("Before");
-  
+
   await next(); // ← Выполняет следующий middleware/handler
-  
+
   // После handler
   console.log("After");
 };
 ```
 
 ### 3. Command Routing
+
 Telegraf автоматически распознает команды и вызывает нужный handler.
 
 ```typescript
-bot.command("start", handler1);  // /start → handler1
-bot.command("help", handler2);   // /help → handler2
-bot.on("text", handler3);        // любой текст → handler3
-bot.on("message", handler4);     // fallback для всего остального
+bot.command("start", handler1); // /start → handler1
+bot.command("help", handler2); // /help → handler2
+bot.on("text", handler3); // любой текст → handler3
+bot.on("message", handler4); // fallback для всего остального
 ```
 
 ### 4. Context (ctx)
+
 Объект `ctx` содержит:
+
 - `ctx.from` - информация о пользователе
 - `ctx.message` - сообщение
 - `ctx.reply()` - отправить ответ
 - `ctx.sendChatAction()` - показать "typing..."
 
 ### 5. Error Propagation
+
 Ошибки "всплывают" вверх по chain пока не поймает errorHandlerMiddleware.
 
 ```
@@ -419,6 +438,7 @@ Error Handler: catch! → handleError()
 ## 🆚 Сравнение с старым кодом
 
 ### Старый webhook.ts (монолитный)
+
 ```typescript
 // ВСЁ В ОДНОМ ФАЙЛЕ
 bot.command("start", async (ctx) => {
@@ -445,6 +465,7 @@ bot.command("help", async (ctx) => {
 ```
 
 **Проблемы:**
+
 - ❌ Дублирование кода (error handling в каждой команде)
 - ❌ Нет логирования
 - ❌ Нет rate limiting
@@ -452,18 +473,20 @@ bot.command("help", async (ctx) => {
 - ❌ Все в одном файле (195 строк)
 
 ### Новый webhook.refactored.ts (модульный)
+
 ```typescript
 // Middleware делают всю работу
-bot.use(errorHandlerMiddleware);  // Error handling для ВСЕХ
-bot.use(loggingMiddleware);        // Logging для ВСЕХ
-bot.use(rateLimitMiddleware);      // Rate limit для ВСЕХ
+bot.use(errorHandlerMiddleware); // Error handling для ВСЕХ
+bot.use(loggingMiddleware); // Logging для ВСЕХ
+bot.use(rateLimitMiddleware); // Rate limit для ВСЕХ
 
 // Handler только с логикой
 bot.command("start", startHandler); // 1 строка!
-bot.command("help", helpHandler);   // 1 строка!
+bot.command("help", helpHandler); // 1 строка!
 ```
 
 **Преимущества:**
+
 - ✅ Нет дублирования
 - ✅ Централизованный error handling
 - ✅ Автоматическое логирование
@@ -499,6 +522,7 @@ bot.command("help", helpHandler);   // 1 строка!
    - Работает до Ctrl+C
 
 **Ключевое отличие от старого:**
+
 - Разделение ответственности
 - Middleware для cross-cutting concerns
 - Handlers только для бизнес-логики
@@ -508,4 +532,3 @@ bot.command("help", helpHandler);   // 1 строка!
 ---
 
 Последнее обновление: 2026-01-07
-

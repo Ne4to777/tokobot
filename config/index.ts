@@ -45,7 +45,14 @@ export const Constants = {
     "💡 Все идеи для небольших команд (2-5 человек) и невозможны без AI/ML.",
 
   // Available topics
-  TOPICS: ["sales", "marketing", "hr", "product", "support", "finance"] as const,
+  TOPICS: [
+    "sales",
+    "marketing",
+    "hr",
+    "product",
+    "support",
+    "finance",
+  ] as const,
 
   // AI settings
   AI_MODEL: "mistralai/Mistral-7B-Instruct-v0.2",
@@ -64,4 +71,3 @@ export const Constants = {
  * Export config instance
  */
 export const config = getConfig();
-

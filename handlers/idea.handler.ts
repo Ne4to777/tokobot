@@ -10,9 +10,10 @@ import { createLogger } from "../utils/logger.js";
 const logger = createLogger("Handler:Idea");
 
 export const ideaHandler: CommandHandler = async (ctx) => {
-  const args = ctx.message && "text" in ctx.message
-    ? ctx.message.text.split(" ").slice(1)
-    : [];
+  const args =
+    ctx.message && "text" in ctx.message
+      ? ctx.message.text.split(" ").slice(1)
+      : [];
 
   const topic = args[0]?.toLowerCase();
 
@@ -34,4 +35,3 @@ export const ideaHandler: CommandHandler = async (ctx) => {
     await handleError(ctx, error as Error, "IdeaHandler");
   }
 };
-

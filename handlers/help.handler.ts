@@ -25,4 +25,3 @@ export const helpHandler: CommandHandler = async (ctx) => {
 
   await ctx.reply(message);
 };
-

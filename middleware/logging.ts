@@ -13,9 +13,12 @@ const logger = createLogger("Middleware:Logging");
 export const loggingMiddleware: MiddlewareFunction = async (ctx, next) => {
   const userId = ctx.from?.id;
   const username = ctx.from?.username || "unknown";
-  const messageText = ctx.message && "text" in ctx.message ? ctx.message.text : "non-text";
+  const messageText =
+    ctx.message && "text" in ctx.message ? ctx.message.text : "non-text";
 
-  logger.info(`Incoming message from user ${userId} (@${username}): ${messageText}`);
+  logger.info(
+    `Incoming message from user ${userId} (@${username}): ${messageText}`
+  );
 
   const startTime = Date.now();
 
@@ -29,4 +32,3 @@ export const loggingMiddleware: MiddlewareFunction = async (ctx, next) => {
     throw error;
   }
 };
-

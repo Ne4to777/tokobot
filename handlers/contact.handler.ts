@@ -10,7 +10,14 @@ import { createLogger } from "../utils/logger.js";
 const logger = createLogger("Handler:Contact");
 
 // Simple state management for contact flow
-const contactStates = new Map<number, { step: "awaiting_name" | "awaiting_phone" | "awaiting_email"; name?: string; phone?: string }>();
+const contactStates = new Map<
+  number,
+  {
+    step: "awaiting_name" | "awaiting_phone" | "awaiting_email";
+    name?: string;
+    phone?: string;
+  }
+>();
 
 export const contactHandler: CommandHandler = async (ctx) => {
   const userId = ctx.from?.id;
@@ -34,8 +41,7 @@ export const contactHandler: CommandHandler = async (ctx) => {
   contactStates.set(userId, { step: "awaiting_name" });
 
   await ctx.reply(
-    "📝 Давайте оставим заявку на консультацию!\n\n" +
-      "Как вас зовут?"
+    "📝 Давайте оставим заявку на консультацию!\n\n" + "Как вас зовут?"
   );
 };
 
@@ -108,4 +114,3 @@ export const handleContactFlow: CommandHandler = async (ctx) => {
     await handleError(ctx, error as Error, "ContactFlow");
   }
 };
-

@@ -2,8 +2,8 @@
  * Tests for utils/helpers.ts
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { retry, randomElement } from "../../utils/helpers.js";
+import { describe, expect, it, vi } from "vitest";
+import { randomElement, retry } from "../../utils/helpers.js";
 
 describe("helpers", () => {
   describe("randomElement", () => {
@@ -68,4 +68,3 @@ describe("helpers", () => {
     });
   });
 });
-

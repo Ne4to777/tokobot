@@ -24,18 +24,21 @@ Tokobot is a serverless Telegram bot that generates AI-first business ideas and 
 **Responsibility**: Handle incoming webhook requests from Telegram
 
 **Key Functions**:
+
 - Receive and parse Telegram updates
 - Route commands to appropriate handlers
 - Send responses back to users
 - Handle errors gracefully
 
 **Commands**:
+
 - `/start` - Bot introduction
 - `/idea [category]` - Generate business ideas
 - `/contact` - Collect user information for CRM
 - `/help` - Show available commands
 
 **Flow**:
+
 ```
 Telegram → Vercel Webhook → Command Handler → Response → Telegram
 ```
@@ -45,11 +48,13 @@ Telegram → Vercel Webhook → Command Handler → Response → Telegram
 **Responsibility**: Generate business ideas using AI or fallback to local database
 
 **Key Functions**:
+
 - `generateIdea(topic?)` - Main idea generation function
 - `generateWithHuggingFace()` - AI-powered generation
 - `generateLocalIdea()` - Fallback to local ideas
 
 **Decision Flow**:
+
 ```
 generateIdea()
     │
@@ -67,6 +72,7 @@ generateIdea()
 ```
 
 **Data Structure**:
+
 ```typescript
 // Base ideas pool: 50+ general AI-first ideas
 const ideas: string[] = [...]
@@ -87,6 +93,7 @@ const topicIdeas: Record<Topic, string[]> = {
 **Responsibility**: Integrate with Bitrix24 CRM via REST API
 
 **Key Functions**:
+
 - `createLead(data)` - Create new lead in CRM
 - `updateLead(id, data)` - Update existing lead
 - `addLeadComment(id, comment)` - Add comment to lead
@@ -94,6 +101,7 @@ const topicIdeas: Record<Topic, string[]> = {
 - `createTask(data)` - Create task for lead
 
 **API Flow**:
+
 ```
 Bot Command
     │
@@ -109,6 +117,7 @@ Bot Command
 ```
 
 **Authentication**:
+
 - Uses incoming webhook URL with embedded token
 - Format: `https://{domain}.bitrix24.ru/rest/{user_id}/{webhook_token}/`
 - No additional auth required
@@ -184,9 +193,11 @@ Notify user of success
 ## Environment Configuration
 
 ### Required
+
 - `BOT_TOKEN` - Telegram bot token from @BotFather
 
 ### Optional
+
 - `HUGGINGFACE_TOKEN` - Hugging Face API token for AI generation
 - `BITRIX24_WEBHOOK` - Bitrix24 webhook URL for CRM integration
 - `NODE_ENV` - Environment (development/production)
@@ -194,6 +205,7 @@ Notify user of success
 ## Deployment Architecture
 
 ### Development (Local)
+
 ```
 Local Machine
     │
@@ -206,6 +218,7 @@ Local Machine
 ```
 
 ### Production (Vercel)
+
 ```
 Vercel Serverless
     │
@@ -224,6 +237,7 @@ Vercel Serverless
 ## Error Handling Strategy
 
 ### Levels
+
 1. **User-facing errors** - Show friendly message
 2. **Log errors** - Console.error with context
 3. **Fallback mechanisms** - Graceful degradation
@@ -257,16 +271,19 @@ catch (error) {
 ## Security Considerations
 
 ### Secrets Management
+
 - All tokens/keys in environment variables
 - Never commit `.env` files
 - Vercel encrypts env vars at rest
 
 ### Input Validation
+
 - Validate command parameters
 - Sanitize user input before CRM
 - Rate limiting via Telegram's built-in mechanisms
 
 ### API Security
+
 - Webhook URL is secret (not in docs)
 - Vercel HTTPS by default
 - Bitrix24 webhook has limited scope
@@ -274,12 +291,14 @@ catch (error) {
 ## Performance Optimization
 
 ### Strategies
+
 1. **Lazy loading** - Only load dependencies when needed
 2. **Caching** - Cache Hugging Face responses (future)
 3. **Async operations** - All I/O is non-blocking
 4. **Minimal dependencies** - Keep bundle size small
 
 ### Metrics
+
 - Cold start: ~500ms
 - Warm response: ~50-100ms
 - API calls: 1-2 seconds (external dependency)
@@ -287,11 +306,13 @@ catch (error) {
 ## Future Architecture Considerations
 
 ### Scaling
+
 - Vercel auto-scales to demand
 - No database = stateless design
 - Consider Redis for session state (if needed)
 
 ### Features to Add
+
 - Unit tests with Jest
 - E2E tests with Playwright
 - Monitoring with Sentry
@@ -299,6 +320,7 @@ catch (error) {
 - Database for lead history
 
 ### Potential Improvements
+
 - Multi-language support
 - Custom AI model fine-tuning
 - Advanced lead scoring
@@ -325,6 +347,7 @@ lib/bitrix24.ts
 ## API Contracts
 
 ### Telegram → Bot
+
 ```typescript
 interface Update {
   message?: {
@@ -336,6 +359,7 @@ interface Update {
 ```
 
 ### Bot → Hugging Face
+
 ```typescript
 interface HFRequest {
   inputs: string;
@@ -347,6 +371,7 @@ interface HFRequest {
 ```
 
 ### Bot → Bitrix24
+
 ```typescript
 interface LeadCreateRequest {
   fields: {
@@ -363,11 +388,13 @@ interface LeadCreateRequest {
 ## Monitoring & Debugging
 
 ### Logs
+
 - Vercel dashboard: All console.log/error output
 - Telegram API: Use getWebhookInfo for webhook status
 - Bitrix24: Check CRM for lead creation success
 
 ### Common Issues
+
 1. **Bot not responding** → Check webhook URL
 2. **AI not working** → Verify HF token & quota
 3. **CRM integration failing** → Check webhook permissions
@@ -379,4 +406,3 @@ interface LeadCreateRequest {
 - [Vercel Serverless Functions](https://vercel.com/docs/functions)
 - [Hugging Face Inference API](https://huggingface.co/docs/api-inference/)
 - [Bitrix24 REST API](https://dev.1c-bitrix.ru/rest_help/)
-

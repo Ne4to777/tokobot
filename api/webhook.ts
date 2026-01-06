@@ -106,4 +106,3 @@ if (config.environment === "development") {
     bot.stop("SIGTERM");
   });
 }
-

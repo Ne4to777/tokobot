@@ -73,24 +73,30 @@ tokobot/
 ### Core Application Files
 
 #### `api/webhook.ts`
+
 **Purpose**: Main entry point for the Telegram bot  
 **Key responsibilities**:
+
 - Handles incoming Telegram webhooks
 - Routes commands to appropriate handlers
 - Manages bot instance and middleware
 - Exports serverless function for Vercel
 
 #### `lib/ai.ts`
+
 **Purpose**: AI-powered idea generation  
 **Key responsibilities**:
+
 - Integrates with HuggingFace Inference API
 - Provides local fallback with 50+ pre-made ideas
 - Category-specific idea generation (sales, marketing, etc.)
 - Error handling and retries
 
 #### `lib/bitrix24.ts`
+
 **Purpose**: Bitrix24 CRM integration  
 **Key responsibilities**:
+
 - Lead creation and management
 - Contact data handling
 - Task creation
@@ -99,24 +105,32 @@ tokobot/
 ### Configuration Files
 
 #### `.editorconfig`
+
 Ensures consistent coding style across different editors (indentation, line endings, etc.)
 
 #### `.prettierrc` & `.prettierignore`
+
 Code formatting rules and exclusions for Prettier
 
 #### `tsconfig.json`
+
 TypeScript compiler configuration:
+
 - Target: ES2022
 - Module: NodeNext (ESM)
 - Strict mode enabled
 
 #### `vercel.json`
+
 Vercel deployment configuration:
+
 - Serverless function routing
 - Build settings
 
 #### `package.json`
+
 Project metadata and dependencies:
+
 - Scripts for development and testing
 - Dependencies (telegraf, dotenv, etc.)
 - DevDependencies (TypeScript, tsx, prettier)
@@ -124,49 +138,64 @@ Project metadata and dependencies:
 ### Documentation Files
 
 #### `README.md` 🎯
-**Primary documentation** - Start here!  
+
+**Primary documentation** - Start here!
+
 - Project overview
 - Quick start guide
 - Deployment instructions
 - Available commands
 
 #### `QUICKSTART.md` 🚀
-**5-minute setup** - For impatient developers  
+
+**5-minute setup** - For impatient developers
+
 - Minimal steps to get bot running
 - Troubleshooting quick fixes
 
 #### `DEVELOPMENT.md` 💻
-**For contributors** - Deep dive into development  
+
+**For contributors** - Deep dive into development
+
 - Development workflow
 - Code style guidelines
 - Testing procedures
 - Debugging tips
 
 #### `CONTRIBUTING.md` 🤝
-**Contribution guidelines**  
+
+**Contribution guidelines**
+
 - How to submit PRs
 - Commit message format
 - Code review process
 
 #### `ARCHITECTURE.md` 🏛️
-**System design** - Understanding the architecture  
+
+**System design** - Understanding the architecture
+
 - Component overview
 - Data flow diagrams
 - Technology choices
 
 #### `BITRIX24_INTEGRATION.md` 🔗
-**CRM integration guide**  
+
+**CRM integration guide**
+
 - Bitrix24 setup instructions
 - Webhook configuration
 - Lead management workflow
 
 #### `PROJECT_STRUCTURE.md` 📁
+
 **This file** - Repository navigation guide
 
 ### GitHub Configuration
 
 #### `.github/workflows/`
+
 **CI/CD pipelines**:
+
 - `ci.yml` - Run tests and type checks on PRs
 - `codeql.yml` - Security vulnerability scanning
 - `dependency-review.yml` - Check for vulnerable dependencies
@@ -174,18 +203,23 @@ Project metadata and dependencies:
 - `lint.yml` - Code quality and formatting checks
 
 #### `.github/ISSUE_TEMPLATE/`
+
 **Issue templates**:
+
 - `bug_report.md` - Standardized bug reports
 - `feature_request.md` - Feature request format
 - `config.yml` - Template configuration
 
 #### `.github/CODEOWNERS`
+
 Automatically assigns reviewers based on file changes
 
 #### `.github/dependabot.yml`
+
 Automated dependency updates for npm and GitHub Actions
 
 #### `.github/AI_DEVELOPMENT_GUIDE.md`
+
 Special guide for AI coding assistants (Copilot, Cursor, etc.)
 
 ### Scripts Directory
@@ -193,18 +227,23 @@ Special guide for AI coding assistants (Copilot, Cursor, etc.)
 Helper bash scripts for common tasks:
 
 #### `check-webhook.sh`
+
 Checks current webhook status and configuration
 
 #### `set-webhook.sh`
+
 Sets Telegram webhook for production deployment
 
 #### `set-vercel-webhook.sh`
+
 Sets webhook for Vercel deployment specifically
 
 #### `test-bitrix-webhook.sh`
+
 Tests Bitrix24 webhook connectivity and permissions
 
 #### `restart-bot.sh`
+
 Stops and restarts local bot instance
 
 ## 🔄 Data Flow
@@ -234,24 +273,30 @@ Local Fallback  CRM
 ## 🎯 Key Patterns
 
 ### ESM Imports (IMPORTANT!)
+
 All local imports must use `.js` extension:
+
 ```typescript
-import { generateIdea } from "../lib/ai.js";  // ✅
-import { generateIdea } from "../lib/ai";      // ❌
+import { generateIdea } from "../lib/ai.js"; // ✅
+import { generateIdea } from "../lib/ai"; // ❌
 ```
 
 ### Environment Variables
+
 Loaded via `dotenv` in development, Vercel env vars in production
 
 ### Error Handling
+
 All API calls wrapped in try-catch with user-friendly fallbacks
 
 ### TypeScript
+
 Strict mode enabled, explicit types required, no `any` types
 
 ## 🔐 Security
 
 Sensitive files (automatically ignored by git):
+
 - `.env` - Local environment variables
 - `.vercel/` - Vercel build artifacts
 - `node_modules/` - Dependencies
@@ -259,11 +304,13 @@ Sensitive files (automatically ignored by git):
 ## 📦 Dependencies
 
 ### Production
+
 - `telegraf` - Telegram bot framework
 - `dotenv` - Environment variable loading
 - `@types/node` - Node.js type definitions
 
 ### Development
+
 - `typescript` - TypeScript compiler
 - `tsx` - TypeScript execution for development
 - `prettier` - Code formatting
@@ -271,6 +318,7 @@ Sensitive files (automatically ignored by git):
 ## 🚀 Deployment
 
 The project is optimized for **Vercel serverless deployment**:
+
 - No persistent state
 - Webhook-based (not polling)
 - Environment variables via Vercel dashboard
@@ -279,6 +327,7 @@ The project is optimized for **Vercel serverless deployment**:
 ## 📚 For New Contributors
 
 **Start with these files in order**:
+
 1. `README.md` - Understand what the project does
 2. `QUICKSTART.md` - Get it running locally
 3. `DEVELOPMENT.md` - Learn the development workflow
@@ -290,6 +339,7 @@ The project is optimized for **Vercel serverless deployment**:
 ## 🔍 Finding Things
 
 **Need to...**
+
 - **Add a bot command?** → Edit `api/webhook.ts`
 - **Change AI behavior?** → Edit `lib/ai.ts`
 - **Modify CRM integration?** → Edit `lib/bitrix24.ts`
@@ -302,4 +352,3 @@ The project is optimized for **Vercel serverless deployment**:
 
 **Last updated**: 2026-01-07  
 **Maintained by**: Tokobot contributors
-

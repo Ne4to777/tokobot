@@ -39,6 +39,7 @@ echo "BOT_TOKEN=123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11" >> .env
 ```
 
 Or manually edit `.env`:
+
 ```env
 BOT_TOKEN=123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
 ```
@@ -50,6 +51,7 @@ npm run dev
 ```
 
 You should see:
+
 ```
 Bot is running in polling mode...
 ```
@@ -102,19 +104,23 @@ Want better AI-generated ideas?
 1. Sign up at [HuggingFace](https://huggingface.co/)
 2. Create a token at [Settings → Tokens](https://huggingface.co/settings/tokens)
 3. Add to `.env`:
+
 ```env
 HUGGINGFACE_TOKEN=hf_xxxxxxxxxxxxxxxxxxxx
 ```
+
 4. Restart bot
 
 ### 💻 Start Developing
 
 Read the development guide:
+
 ```bash
 cat DEVELOPMENT.md
 ```
 
 Key commands:
+
 ```bash
 npm run dev           # Run in development mode
 npm run typecheck     # Check TypeScript types
@@ -125,21 +131,25 @@ npm run format:check  # Check code formatting
 ## 🐛 Troubleshooting
 
 ### "BOT_TOKEN must be provided"
+
 - Make sure `.env` file exists
 - Check that `BOT_TOKEN=` line has no spaces
 - Restart the bot after changing `.env`
 
 ### "Error: 409 Conflict"
+
 - Another instance of your bot is running
 - Stop the other instance (or run `pkill -f "tsx watch"`)
 - Only one instance can run at a time
 
 ### Bot doesn't respond
+
 - Check that bot is running (you should see "Bot is running...")
 - Make sure you're messaging the correct bot
 - Try `/start` command first
 
 ### TypeScript errors
+
 ```bash
 # Make sure all dependencies are installed
 npm install
@@ -164,4 +174,3 @@ npm run typecheck
 ---
 
 **Happy coding! 🤖**
-

@@ -26,4 +26,3 @@ export const startHandler: CommandHandler = async (ctx) => {
 
   await ctx.reply(message);
 };
-

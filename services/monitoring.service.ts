@@ -4,7 +4,7 @@
  */
 
 import { createLogger } from "../utils/logger.js";
-import { analyticsService, EventType } from "./analytics.service.js";
+import { analyticsService } from "./analytics.service.js";
 
 const logger = createLogger("MonitoringService");
 
@@ -190,8 +190,8 @@ class MonitoringServiceClass {
       memoryUsage.heapUsed > memoryLimit * 0.9
         ? "unhealthy"
         : memoryUsage.heapUsed > memoryLimit * 0.7
-        ? "degraded"
-        : "healthy";
+          ? "degraded"
+          : "healthy";
 
     // Uptime check
     const uptimeStatus = uptimeSeconds > 60 ? "healthy" : "degraded";
@@ -204,15 +204,14 @@ class MonitoringServiceClass {
       criticalErrors.length > 0
         ? "unhealthy"
         : recentErrors.length > 10
-        ? "degraded"
-        : "healthy";
+          ? "degraded"
+          : "healthy";
 
     // Overall status
     const statuses = [memoryStatus, uptimeStatus, errorStatus];
-    const overallStatus =
-      statuses.includes("unhealthy")
-        ? "unhealthy"
-        : statuses.includes("degraded")
+    const overallStatus = statuses.includes("unhealthy")
+      ? "unhealthy"
+      : statuses.includes("degraded")
         ? "degraded"
         : "healthy";
 
@@ -243,9 +242,7 @@ class MonitoringServiceClass {
    */
   clearOldErrors(): void {
     const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
-    this.errors = this.errors.filter(
-      (e) => e.timestamp.getTime() > oneDayAgo
-    );
+    this.errors = this.errors.filter((e) => e.timestamp.getTime() > oneDayAgo);
     logger.info("Old errors cleared", {
       remainingErrors: this.errors.length,
     });
@@ -268,9 +265,11 @@ export const monitoringService = new MonitoringServiceClass();
 
 // Schedule periodic cleanup (every hour)
 if (typeof setInterval !== "undefined") {
-  setInterval(() => {
-    monitoringService.clearOldErrors();
-    analyticsService.clearOldEvents();
-  }, 60 * 60 * 1000);
+  setInterval(
+    () => {
+      monitoringService.clearOldErrors();
+      analyticsService.clearOldEvents();
+    },
+    60 * 60 * 1000
+  );
 }
-

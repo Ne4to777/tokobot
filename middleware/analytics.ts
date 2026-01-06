@@ -57,4 +57,3 @@ export const analyticsMiddleware = async (
 
   return next();
 };
-

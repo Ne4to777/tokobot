@@ -14,6 +14,7 @@ The dashboard can be optionally protected with a bearer token.
 ### Setup Authentication
 
 1. Generate a secure token:
+
 ```bash
 openssl rand -hex 32
 ```
@@ -21,6 +22,7 @@ openssl rand -hex 32
 2. Set `DASHBOARD_TOKEN` environment variable in Vercel
 
 3. Use the token in requests:
+
 ```bash
 curl -H "Authorization: Bearer your_token" \
   "https://tokobot-five.vercel.app/api/dashboard?action=system-stats"
@@ -31,6 +33,7 @@ curl -H "Authorization: Bearer your_token" \
 ### Analytics Endpoints
 
 #### System Statistics
+
 ```
 GET /api/dashboard?action=system-stats
 ```
@@ -38,6 +41,7 @@ GET /api/dashboard?action=system-stats
 Returns overall system statistics.
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -59,6 +63,7 @@ Returns overall system statistics.
 ```
 
 #### User Statistics
+
 ```
 GET /api/dashboard?action=user-stats
 GET /api/dashboard?action=user-stats&userId=123456
@@ -67,6 +72,7 @@ GET /api/dashboard?action=user-stats&userId=123456
 Get statistics for all users or a specific user.
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -83,6 +89,7 @@ Get statistics for all users or a specific user.
 ```
 
 #### Recent Events
+
 ```
 GET /api/dashboard?action=recent-events&limit=50
 ```
@@ -90,6 +97,7 @@ GET /api/dashboard?action=recent-events&limit=50
 Get recent bot events.
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -106,6 +114,7 @@ Get recent bot events.
 ```
 
 #### Events by Type
+
 ```
 GET /api/dashboard?action=events-by-type&type=command_used&limit=100
 ```
@@ -113,6 +122,7 @@ GET /api/dashboard?action=events-by-type&type=command_used&limit=100
 Filter events by type.
 
 **Event Types**:
+
 - `command_used`
 - `idea_generated`
 - `lead_created`
@@ -121,6 +131,7 @@ Filter events by type.
 - `rate_limit_hit`
 
 #### Events by User
+
 ```
 GET /api/dashboard?action=events-by-user&userId=123456&limit=100
 ```
@@ -128,6 +139,7 @@ GET /api/dashboard?action=events-by-user&userId=123456&limit=100
 Get all events for a specific user.
 
 #### Export Analytics
+
 ```
 GET /api/dashboard?action=export
 ```
@@ -139,6 +151,7 @@ Export all analytics data as JSON file.
 ### Monitoring Endpoints
 
 #### Health Check
+
 ```
 GET /api/dashboard?action=health
 ```
@@ -146,6 +159,7 @@ GET /api/dashboard?action=health
 Get detailed health status.
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -175,11 +189,13 @@ Get detailed health status.
 ```
 
 **Status Values**:
+
 - `healthy`: Everything is working normally
 - `degraded`: Some issues detected, but system is functional
 - `unhealthy`: Critical issues, system may not be functioning properly
 
 #### Recent Errors
+
 ```
 GET /api/dashboard?action=errors&limit=50
 ```
@@ -187,6 +203,7 @@ GET /api/dashboard?action=errors&limit=50
 Get recent errors.
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -208,6 +225,7 @@ Get recent errors.
 ```
 
 #### Error Statistics
+
 ```
 GET /api/dashboard?action=error-stats
 ```
@@ -215,6 +233,7 @@ GET /api/dashboard?action=error-stats
 Get error statistics and trends.
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -237,6 +256,7 @@ Get error statistics and trends.
 ```
 
 #### Export Monitoring Data
+
 ```
 GET /api/dashboard?action=monitoring-export
 ```
@@ -300,24 +320,19 @@ const DASHBOARD_URL = "https://tokobot-five.vercel.app/api/dashboard";
 const DASHBOARD_TOKEN = process.env.DASHBOARD_TOKEN;
 
 async function getSystemStats() {
-  const response = await fetch(
-    `${DASHBOARD_URL}?action=system-stats`,
-    {
-      headers: {
-        Authorization: `Bearer ${DASHBOARD_TOKEN}`,
-      },
-    }
-  );
-  
+  const response = await fetch(`${DASHBOARD_URL}?action=system-stats`, {
+    headers: {
+      Authorization: `Bearer ${DASHBOARD_TOKEN}`,
+    },
+  });
+
   const data = await response.json();
   return data.data;
 }
 
 async function checkHealth() {
-  const response = await fetch(
-    `${DASHBOARD_URL}?action=health`
-  );
-  
+  const response = await fetch(`${DASHBOARD_URL}?action=health`);
+
   const data = await response.json();
   console.log(`Status: ${data.data.status}`);
   return data.data;
@@ -383,4 +398,3 @@ def check_health():
 - [Deployment Guide](./DEPLOYMENT_EXPLAINED.md)
 - [Development Guide](./DEVELOPMENT.md)
 - [Main README](../README.md)
-

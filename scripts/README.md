@@ -7,43 +7,52 @@ This directory contains utility scripts for managing and deploying the Tokobot T
 ### 🔗 Webhook Management
 
 #### `set-webhook.sh`
+
 Sets the Telegram webhook to your deployment URL.
 
 **Usage:**
+
 ```bash
 ./scripts/set-webhook.sh <YOUR_VERCEL_URL>
 ```
 
 **Example:**
+
 ```bash
 ./scripts/set-webhook.sh https://tokobot.vercel.app
 ```
 
 **What it does:**
+
 - Configures Telegram to send updates to your Vercel function
 - Uses `BOT_TOKEN` from environment (reads from `.env`)
 - Appends `/api/webhook` to the URL automatically
 
 **Requirements:**
+
 - `.env` file with `BOT_TOKEN`
 - `curl` and `jq` installed
 
 ---
 
 #### `set-vercel-webhook.sh`
+
 Specifically designed for Vercel deployments, automatically uses your Vercel project URL.
 
 **Usage:**
+
 ```bash
 ./scripts/set-vercel-webhook.sh
 ```
 
 **What it does:**
+
 - Detects your Vercel project URL automatically
 - Sets webhook to `https://your-project.vercel.app/api/webhook`
 - Uses `BOT_TOKEN` from `.env`
 
 **Requirements:**
+
 - `.env` file with `BOT_TOKEN`
 - Vercel CLI installed and logged in
 - `curl` and `jq` installed
@@ -51,20 +60,24 @@ Specifically designed for Vercel deployments, automatically uses your Vercel pro
 ---
 
 #### `check-webhook.sh`
+
 Checks the current webhook status and configuration.
 
 **Usage:**
+
 ```bash
 ./scripts/check-webhook.sh
 ```
 
 **What it does:**
+
 - Shows current webhook URL
 - Displays pending updates count
 - Shows last error (if any)
 - Indicates if webhook is working
 
 **Output Example:**
+
 ```json
 {
   "ok": true,
@@ -78,6 +91,7 @@ Checks the current webhook status and configuration.
 ```
 
 **Requirements:**
+
 - `.env` file with `BOT_TOKEN`
 - `curl` and `jq` installed
 
@@ -86,19 +100,23 @@ Checks the current webhook status and configuration.
 ### 🐛 Development & Testing
 
 #### `restart-bot.sh`
+
 Restarts the local bot process (useful for development).
 
 **Usage:**
+
 ```bash
 ./scripts/restart-bot.sh
 ```
 
 **What it does:**
+
 - Finds running node process with `webhook.ts`
 - Kills the process
 - Restarts bot with `npm run dev`
 
 **Use case:**
+
 - After changing environment variables
 - After code changes that require restart
 - When bot becomes unresponsive
@@ -108,20 +126,24 @@ Restarts the local bot process (useful for development).
 ---
 
 #### `test-bitrix-webhook.sh`
+
 Tests the Bitrix24 webhook configuration.
 
 **Usage:**
+
 ```bash
 ./scripts/test-bitrix-webhook.sh
 ```
 
 **What it does:**
+
 - Sends test request to Bitrix24 API
 - Verifies webhook URL is accessible
 - Checks authentication and permissions
 - Creates a test lead (optional)
 
 **Requirements:**
+
 - `.env` file with `BITRIX24_WEBHOOK`
 - `curl` and `jq` installed
 
@@ -143,6 +165,7 @@ BITRIX24_WEBHOOK=https://your-domain.bitrix24.ru/rest/1/xxx/
 ### 2. Required Tools
 
 **macOS/Linux:**
+
 ```bash
 # curl (usually pre-installed)
 which curl
@@ -153,6 +176,7 @@ apt install jq   # Ubuntu/Debian
 ```
 
 **Windows (WSL recommended):**
+
 ```bash
 # Install jq
 sudo apt install jq curl
@@ -206,6 +230,7 @@ chmod +x scripts/*.sh
 **Problem:** `.env` file missing or doesn't contain `BOT_TOKEN`
 
 **Solution:**
+
 ```bash
 # Create .env from example
 cp env.example .env
@@ -219,6 +244,7 @@ nano .env
 **Problem:** `curl` not installed
 
 **Solution:**
+
 ```bash
 # macOS
 brew install curl
@@ -232,6 +258,7 @@ sudo apt install curl
 **Problem:** `jq` JSON processor not installed
 
 **Solution:**
+
 ```bash
 # macOS
 brew install jq
@@ -247,6 +274,7 @@ sudo apt install jq
 **Problem:** Scripts not executable
 
 **Solution:**
+
 ```bash
 chmod +x scripts/*.sh
 ```
@@ -256,6 +284,7 @@ chmod +x scripts/*.sh
 **Problem:** Telegram not sending updates
 
 **Solution:**
+
 ```bash
 # 1. Check current webhook
 ./scripts/check-webhook.sh
@@ -330,4 +359,3 @@ echo "✅ Done!"
 - **Documentation:** See main [README.md](../README.md)
 - **Issues:** [Report a problem](https://github.com/nybble777/tokobot/issues)
 - **Discussions:** [Ask questions](https://github.com/nybble777/tokobot/discussions)
-

@@ -15,4 +15,3 @@ export const errorHandlerMiddleware: MiddlewareFunction = async (ctx, next) => {
     await handleError(ctx, error as Error, "GlobalMiddleware");
   }
 };
-

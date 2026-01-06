@@ -26,6 +26,7 @@
 5. Скопируйте URL вебхука
 
 URL будет вида:
+
 ```
 https://your-domain.bitrix24.ru/rest/1/xxxxxxxxxx/
 ```
@@ -98,11 +99,11 @@ vercel --prod
 bot.command("qualify", async (ctx) => {
   await ctx.reply(
     "Давайте узнаем о вашем бизнесе!\n\n" +
-    "1. Какой у вас бизнес?\n" +
-    "2. Сколько сотрудников?\n" +
-    "3. Какую задачу хотите решить с помощью AI?"
+      "1. Какой у вас бизнес?\n" +
+      "2. Сколько сотрудников?\n" +
+      "3. Какую задачу хотите решить с помощью AI?"
   );
-  
+
   // Сохраняем состояние (можно использовать session или БД)
   // ...
 });
@@ -148,7 +149,7 @@ bot.command("leads", async (ctx) => {
     `${BITRIX24_WEBHOOK}/crm.lead.list.json?filter[ASSIGNED_BY_ID]=${userId}`
   );
   const leads = await response.json();
-  
+
   // Отправить список лидов
   // ...
 });
@@ -158,7 +159,7 @@ bot.command("comment", async (ctx) => {
   // Формат: /comment LEAD_ID текст комментария
   const [leadId, ...commentParts] = ctx.message.text.split(" ").slice(1);
   const comment = commentParts.join(" ");
-  
+
   await addLeadComment(parseInt(leadId), comment);
   await ctx.reply("✅ Комментарий добавлен");
 });
@@ -174,15 +175,15 @@ import { generateIdea } from "./lib/ai"; // Используем AI
 async function assignLeadToManager(leadData: any) {
   // AI анализирует лид
   const analysis = await analyzeLeadWithAI(leadData);
-  
+
   // Определяем лучшего менеджера
   const managerId = selectBestManager(analysis);
-  
+
   // Обновляем лид
   await updateLead(leadData.id, {
     ASSIGNED_BY_ID: managerId,
   });
-  
+
   // Уведомляем менеджера в Telegram
   await bot.telegram.sendMessage(
     managerChatIds[managerId],
@@ -198,18 +199,18 @@ async function assignLeadToManager(leadData: any) {
 ```typescript
 bot.command("report", async (ctx) => {
   const today = new Date().toISOString().split("T")[0];
-  
+
   const response = await fetch(
     `${BITRIX24_WEBHOOK}/crm.lead.list.json?filter[>=DATE_CREATE]=${today}`
   );
   const data = await response.json();
   const leads = data.result;
-  
+
   await ctx.reply(
     `📊 Отчет за сегодня:\n\n` +
-    `Новых лидов: ${leads.length}\n` +
-    `Квалифицированных: ${leads.filter(l => l.STATUS_ID === "NEW").length}\n` +
-    `В работе: ${leads.filter(l => l.STATUS_ID === "IN_PROCESS").length}`
+      `Новых лидов: ${leads.length}\n` +
+      `Квалифицированных: ${leads.filter((l) => l.STATUS_ID === "NEW").length}\n` +
+      `В работе: ${leads.filter((l) => l.STATUS_ID === "IN_PROCESS").length}`
   );
 });
 ```
@@ -276,7 +277,8 @@ Telegram Bot → n8n → Bitrix24
 
 ### Проблема: Лиды не создаются
 
-**Решение:** 
+**Решение:**
+
 1. Проверьте BITRIX24_WEBHOOK в `.env`
 2. Проверьте логи: `console.log`
 3. Тестируйте webhook напрямую через Postman
@@ -324,9 +326,11 @@ if (existing.result.length > 0) {
 ## 📚 Дополнительные ресурсы
 
 **Документация Битрикс24 REST API:**
+
 - https://dev.1c-bitrix.ru/rest_help/
 
 **Популярные методы:**
+
 - `crm.lead.add` - создать лид
 - `crm.lead.update` - обновить лид
 - `crm.lead.list` - получить список лидов
@@ -334,6 +338,7 @@ if (existing.result.length > 0) {
 - `tasks.task.add` - создать задачу
 
 **Примеры запросов:**
+
 ```bash
 # Создать лид
 curl https://your-domain.bitrix24.ru/rest/1/xxx/crm.lead.add.json \
@@ -357,4 +362,3 @@ curl https://your-domain.bitrix24.ru/rest/1/xxx/crm.lead.list.json
 ---
 
 Нужна помощь? Создайте issue или напишите в Telegram!
-

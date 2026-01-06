@@ -76,4 +76,3 @@ export const IDEAS_DATABASE = {
     ],
   },
 } as const;
-

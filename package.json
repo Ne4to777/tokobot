@@ -23,9 +23,9 @@
   "homepage": "https://github.com/Ne4to777/tokobot#readme",
   "scripts": {
     "dev": "tsx watch api/webhook.ts",
-    "test": "vitest",
-    "test:watch": "vitest watch",
-    "test:coverage": "vitest --coverage",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
@@ -50,4 +50,3 @@
     "node": ">=18.x"
   }
 }
-

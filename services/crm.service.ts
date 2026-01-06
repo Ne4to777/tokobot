@@ -49,7 +49,10 @@ export class CRMService {
     logger.info(`Creating lead for: ${data.name}`);
 
     const leadId = await retry(
-      () => this.callBitrix24API("crm.lead.add", { fields: this.formatLeadData(data) }),
+      () =>
+        this.callBitrix24API("crm.lead.add", {
+          fields: this.formatLeadData(data),
+        }),
       { maxAttempts: 2 }
     );
 
@@ -104,7 +107,10 @@ export class CRMService {
   /**
    * Call Bitrix24 REST API
    */
-  private async callBitrix24API(method: string, params: any = {}): Promise<any> {
+  private async callBitrix24API(
+    method: string,
+    params: any = {}
+  ): Promise<any> {
     const url = `${this.webhookUrl}${method}.json`;
 
     logger.debug(`Calling Bitrix24 API: ${method}`);
@@ -146,4 +152,3 @@ export class CRMService {
  * Singleton instance
  */
 export const crmService = new CRMService();
-
