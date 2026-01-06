@@ -9,18 +9,19 @@ import { createLogger } from "../utils/logger.js";
 
 // Middleware
 import {
-    errorHandlerMiddleware,
-    loggingMiddleware,
-    rateLimitMiddleware,
+  analyticsMiddleware,
+  errorHandlerMiddleware,
+  loggingMiddleware,
+  rateLimitMiddleware,
 } from "../middleware/index.js";
 
 // Handlers
 import {
-    contactHandler,
-    handleContactFlow,
-    helpHandler,
-    ideaHandler,
-    startHandler,
+  contactHandler,
+  handleContactFlow,
+  helpHandler,
+  ideaHandler,
+  startHandler,
 } from "../handlers/index.js";
 
 const logger = createLogger("Webhook");
@@ -31,6 +32,7 @@ const bot = new Telegraf<BotContext>(config.token);
 // Apply middleware (order matters!)
 bot.use(errorHandlerMiddleware);
 bot.use(loggingMiddleware);
+bot.use(analyticsMiddleware);
 bot.use(rateLimitMiddleware);
 
 // Register command handlers

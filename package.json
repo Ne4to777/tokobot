@@ -23,10 +23,15 @@
   "homepage": "https://github.com/Ne4to777/tokobot#readme",
   "scripts": {
     "dev": "tsx watch api/webhook.ts",
+    "test": "vitest",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest --coverage",
+    "test:ui": "vitest --ui",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "npm run typecheck && npm run format:check"
+    "lint": "npm run typecheck && npm run format:check",
+    "ci": "npm run lint && npm run test"
   },
   "dependencies": {
     "telegraf": "^4.15.6",
@@ -36,7 +41,10 @@
   "devDependencies": {
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
-    "prettier": "^3.1.1"
+    "prettier": "^3.1.1",
+    "vitest": "^1.2.0",
+    "@vitest/ui": "^1.2.0",
+    "@vitest/coverage-v8": "^1.2.0"
   },
   "engines": {
     "node": ">=18.x"
