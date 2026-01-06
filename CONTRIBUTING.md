@@ -323,6 +323,7 @@ How was this tested?
    ```
 
 2. **Test all commands:**
+
    - `/start` - Welcome message
    - `/idea` - Random idea
    - `/idea sales` - Category idea

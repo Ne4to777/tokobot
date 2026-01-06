@@ -268,14 +268,19 @@ curl https://api.telegram.org/bot<BOT_TOKEN>/getWebhookInfo
 1. **Vercel читает `vercel.json`**
 
    ```json
-   {} // Пусто = авто-конфигурация
+   {}
+
+
+   // Пусто = авто-конфигурация
    ```
 
 2. **Vercel находит файлы в `api/`**
+
    - `api/webhook.ts` → становится функцией
    - URL: `https://your-project.vercel.app/api/webhook`
 
 3. **Vercel компилирует TypeScript**
+
    - Использует `tsconfig.json`
    - Создает serverless функцию
 

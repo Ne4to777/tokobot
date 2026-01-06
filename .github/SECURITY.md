@@ -37,26 +37,31 @@ Please include the following information:
 When deploying Tokobot:
 
 1. **Environment Variables**
+
    - Never commit `.env` files to version control
    - Use Vercel's environment variable encryption
    - Rotate tokens regularly
 
 2. **Bot Token**
+
    - Keep your bot token secret
    - Never share it in public channels
    - Regenerate if compromised
 
 3. **Bitrix24 Webhook**
+
    - Use incoming webhooks with minimal permissions
    - Regularly audit webhook access logs
    - Delete unused webhooks
 
 4. **Hugging Face Token**
+
    - Use read-only tokens
    - Monitor API usage for anomalies
    - Revoke tokens if suspicious activity detected
 
 5. **Deployment**
+
    - Enable Vercel's deployment protection in production
    - Use environment-specific configurations
    - Monitor function logs for suspicious activity

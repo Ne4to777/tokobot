@@ -367,20 +367,24 @@ def check_health():
 ## Monitoring Best Practices
 
 1. **Regular Health Checks**
+
    - Monitor `/api/dashboard?action=health` every 1-5 minutes
    - Alert when status is `degraded` or `unhealthy`
 
 2. **Error Tracking**
+
    - Check error statistics daily
    - Investigate spikes in error rates
    - Monitor critical errors immediately
 
 3. **Performance Monitoring**
+
    - Track response times (in logs)
    - Monitor memory usage
    - Watch for rate limiting issues
 
 4. **User Analytics**
+
    - Track active users trends
    - Monitor command usage patterns
    - Identify popular features

@@ -126,6 +126,7 @@ npm run test:ui           # Visual UI
 **Workflows**:
 
 1. **Test Workflow** (`test.yml`):
+
    - Runs on push to main/develop
    - Tests on Node.js 18.x and 20.x
    - Uploads coverage to Codecov
@@ -324,6 +325,7 @@ npm run test:ui
 ### CI/CD
 
 1. **Setup Vercel Integration**:
+
    - Add `VERCEL_TOKEN` to GitHub secrets
    - Add `VERCEL_ORG_ID` to GitHub secrets
    - Add `VERCEL_PROJECT_ID` to GitHub secrets
@@ -365,21 +367,25 @@ openssl rand -hex 32
 ### Potential Future Enhancements
 
 1. **Database Integration**
+
    - PostgreSQL for persistent analytics
    - Redis for caching
    - TimescaleDB for time-series data
 
 2. **External Monitoring**
+
    - Sentry integration for error tracking
    - Datadog/New Relic for APM
    - Grafana dashboards
 
 3. **Notifications**
+
    - Slack/Telegram alerts for critical errors
    - Email reports for daily statistics
    - PagerDuty integration
 
 4. **Advanced Analytics**
+
    - User retention metrics
    - Conversion funnels
    - A/B testing framework

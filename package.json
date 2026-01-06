@@ -1,6 +1,6 @@
 {
   "name": "tokobot",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "Telegram bot for generating AI-first business ideas with Bitrix24 integration",
   "type": "module",
   "keywords": [
@@ -34,19 +34,20 @@
     "ci": "npm run lint && npm run test"
   },
   "dependencies": {
-    "telegraf": "^4.15.6",
-    "dotenv": "^16.3.1",
-    "@types/node": "^20.10.6"
+    "@types/node": "22.10.7",
+    "dotenv": "16.4.7",
+    "telegraf": "4.16.3"
   },
   "devDependencies": {
-    "tsx": "^4.7.0",
-    "typescript": "^5.3.3",
-    "prettier": "^3.1.1",
-    "vitest": "^1.2.0",
-    "@vitest/ui": "^1.2.0",
-    "@vitest/coverage-v8": "^1.2.0"
+    "@vitest/coverage-v8": "2.1.9",
+    "@vitest/ui": "2.1.9",
+    "prettier": "3.4.2",
+    "tsx": "4.19.3",
+    "typescript": "5.7.2",
+    "vitest": "2.1.9"
   },
   "engines": {
-    "node": ">=18.x"
+    "node": ">=20.x",
+    "npm": ">=10.x"
   }
 }

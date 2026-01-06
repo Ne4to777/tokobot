@@ -189,18 +189,22 @@ Add these in Vercel Dashboard → Project Settings → Environment Variables:
 ## Security Best Practices
 
 1. **Never commit `.env` file**
+
    - Already in `.gitignore`
    - Contains sensitive credentials
 
 2. **Rotate tokens regularly**
+
    - Change BOT_TOKEN if compromised
    - Regenerate DASHBOARD_TOKEN periodically
 
 3. **Use different tokens for development and production**
+
    - Create separate Telegram bot for testing
    - Use different Bitrix24 webhook
 
 4. **Limit webhook permissions**
+
    - Only grant necessary CRM permissions
    - Don't give admin access
 

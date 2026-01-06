@@ -501,12 +501,14 @@ bot.command("help", helpHandler); // 1 строка!
 **webhook.refactored.ts работает так:**
 
 1. **Инициализация** (при первом запуске)
+
    - Загружает config
    - Создает bot instance
    - Регистрирует middleware
    - Регистрирует handlers
 
 2. **На каждый запрос** (Vercel webhook)
+
    - Vercel вызывает export default функцию
    - bot.handleUpdate() прогоняет через middleware chain
    - Middleware обрабатывают (error, log, rate limit)
