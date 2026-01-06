@@ -388,6 +388,8 @@ Telegram → Webhook → Vercel Function → AI/CRM APIs
 
 - **[Bitrix24 Integration](docs/BITRIX24_INTEGRATION.md)** 🔗 - Интеграция с
   Битрикс24 CRM
+- **[Deployment Explained](docs/DEPLOYMENT_EXPLAINED.md)** 🚀 - Как работает на
+  сервере
 - **[Architecture](docs/ARCHITECTURE.md)** 🏛️ - Архитектура системы
 - **[Project Structure](docs/PROJECT_STRUCTURE.md)** 📁 - Структура файлов
 

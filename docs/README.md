@@ -12,6 +12,7 @@
 
 ### Для разработчиков
 - **[Development Guide](DEVELOPMENT.md)** 💻 - Полное руководство разработчика
+- **[Deployment Explained](DEPLOYMENT_EXPLAINED.md)** 🚀 - Как работает на сервере
 - **[Project Structure](PROJECT_STRUCTURE.md)** 📁 - Структура репозитория
 - **[Architecture](ARCHITECTURE.md)** 🏛️ - Архитектура системы
 
@@ -32,6 +33,7 @@
 | Документ | Описание |
 |----------|----------|
 | [DEVELOPMENT.md](DEVELOPMENT.md) | Полный гайд разработчика |
+| [DEPLOYMENT_EXPLAINED.md](DEPLOYMENT_EXPLAINED.md) | Как работает на сервере (serverless) |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Архитектура системы |
 | [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) | Структура файлов проекта |
 
