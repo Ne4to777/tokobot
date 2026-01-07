@@ -11,6 +11,7 @@ import {
 import { createError } from "../utils/errors.js";
 import { retry } from "../utils/helpers.js";
 import { createLogger } from "../utils/logger.js";
+import { callYandexGPT } from "./yandex-gpt.service.js";
 
 const logger = createLogger("AIService");
 
@@ -43,27 +44,6 @@ interface GroqResponse {
       content: string;
     };
   }>;
-}
-
-/**
- * YandexGPT API response type
- */
-interface YandexGPTResponse {
-  result: {
-    alternatives: Array<{
-      message: {
-        role: string;
-        text: string;
-      };
-      status: string;
-    }>;
-    usage: {
-      inputTextTokens: string;
-      completionTokens: string;
-      totalTokens: string;
-    };
-    modelVersion: string;
-  };
 }
 
 /**
@@ -146,87 +126,29 @@ export class AIService {
    * Call YandexGPT API
    */
   private async callYandexGPTAPI(prompt: string): Promise<string> {
-    if (!this.yandexFolderId) {
+    if (!this.yandexFolderId || !this.aiToken) {
       throw createError(
-        "YANDEX_FOLDER_ID not configured in environment",
+        "YandexGPT is not configured (missing API key or folder ID)",
         ErrorType.AI_SERVICE
       );
     }
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => {
-      logger.warn(`YandexGPT timeout (${Constants.REQUEST_TIMEOUT}ms)`);
-      controller.abort();
-    }, Constants.REQUEST_TIMEOUT);
-
     try {
-      const requestBody = {
-        modelUri: `gpt://${this.yandexFolderId}/${Constants.YANDEX_MODEL}`,
-        completionOptions: {
-          stream: false,
-          temperature: Constants.YANDEX_TEMPERATURE,
-          maxTokens: String(Constants.YANDEX_MAX_TOKENS),
-        },
-        messages: [
-          {
-            role: "user",
-            text: prompt,
-          },
-        ],
-      };
-
-      const response = await fetch(
-        "https://llm.api.cloud.yandex.net/foundationModels/v1/completion",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Api-Key ${this.aiToken}`,
-            "Content-Type": "application/json",
-            "x-folder-id": this.yandexFolderId,
-          },
-          body: JSON.stringify(requestBody),
-          signal: controller.signal,
-        }
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        let errorDetails = errorText;
-        try {
-          const errorJson = JSON.parse(errorText);
-          errorDetails = errorJson.message || errorText;
-        } catch {
-          // Error body is not JSON
-        }
-
-        logger.error(
-          `YandexGPT API error: ${response.status} - ${errorDetails}`
-        );
-
-        throw createError(
-          `YandexGPT API error: ${response.status} - ${errorDetails}`,
-          ErrorType.AI_SERVICE
-        );
-      }
-
-      const data = (await response.json()) as YandexGPTResponse;
-
-      if (!data.result?.alternatives?.[0]?.message?.text) {
-        throw createError(
-          "Invalid YandexGPT response format",
-          ErrorType.AI_SERVICE
-        );
-      }
-
-      const generatedText = data.result.alternatives[0].message.text.trim();
-      return generatedText;
+      // Use the proven working implementation from yandex-gpt.service
+      return await callYandexGPT({
+        folderId: this.yandexFolderId,
+        apiKey: this.aiToken,
+        prompt,
+        maxTokens: Constants.YANDEX_MAX_TOKENS,
+        temperature: Constants.YANDEX_TEMPERATURE,
+        timeout: Constants.REQUEST_TIMEOUT,
+      });
     } catch (error) {
-      if (error instanceof Error && error.name === "AbortError") {
-        throw createError("AI request timeout", ErrorType.AI_SERVICE, error);
-      }
-      throw error;
-    } finally {
-      clearTimeout(timeout);
+      throw createError(
+        error instanceof Error ? error.message : "YandexGPT request failed",
+        ErrorType.AI_SERVICE,
+        error instanceof Error ? error : undefined
+      );
     }
   }
 
