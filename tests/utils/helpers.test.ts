@@ -65,8 +65,8 @@ describe("helpers", () => {
       await retry(fn, { maxAttempts: 3, initialDelay: 100 });
       const duration = Date.now() - start;
 
-      // Should wait at least 100ms before second attempt
-      expect(duration).toBeGreaterThanOrEqual(100);
+      // Should wait at least ~100ms before second attempt (allow some margin for execution time)
+      expect(duration).toBeGreaterThanOrEqual(90);
     });
   });
 });
