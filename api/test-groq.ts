@@ -38,7 +38,7 @@ export default async (req: any, res: any) => {
           Authorization: `Bearer ${GROQ_API_KEY}`,
         },
         body: JSON.stringify({
-          model: "llama-3.1-70b-versatile",
+          model: "llama-3.3-70b-versatile", // Updated model (3.1 deprecated)
           messages: [
             {
               role: "user",
@@ -83,7 +83,7 @@ export default async (req: any, res: any) => {
           name: "Groq API Connection",
           status: "SUCCESS",
           duration: apiDuration,
-          model: "llama-3.1-70b-versatile",
+          model: "llama-3.3-70b-versatile",
           responsePreview: generatedText.substring(0, 100),
         },
       ],
