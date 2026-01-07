@@ -98,12 +98,12 @@ export const Constants = {
 
   // AI settings - Groq
   GROQ_MODEL: "llama-3.3-70b-versatile",
-  GROQ_MAX_TOKENS: 800, // Increased for structured response with ROI
-  GROQ_TEMPERATURE: 0.9,
+  GROQ_MAX_TOKENS: 400, // Limited to force concise responses
+  GROQ_TEMPERATURE: 0.8, // Slightly lower for more focused output
 
   // AI settings - YandexGPT (рекомендуется для РФ - бесплатно!)
   YANDEX_MODEL: "yandexgpt-lite", // Бесплатная модель: 1000 запросов/месяц
-  YANDEX_MAX_TOKENS: 800, // Increased for structured response with ROI
+  YANDEX_MAX_TOKENS: 400, // Limited to force concise responses
   YANDEX_TEMPERATURE: 0.8,
 
   // Timeouts
