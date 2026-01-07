@@ -68,19 +68,31 @@ export class AIService {
   ): Promise<GeneratedIdea> {
     const { topic, useAI = this.aiEnabled } = options;
 
+    logger.info(
+      `generateIdea called: topic=${topic}, useAI=${useAI}, aiEnabled=${this.aiEnabled}, aiToken=${this.aiToken ? "SET" : "NOT SET"}, aiProvider=${this.aiProvider}`
+    );
+
     // Try AI if enabled and requested
     if (useAI && this.aiToken) {
+      logger.info(`Attempting AI generation with provider: ${this.aiProvider}`);
       try {
-        return await this.generateWithAI(topic);
+        const result = await this.generateWithAI(topic);
+        logger.info(`AI generation SUCCESS`);
+        return result;
       } catch (error) {
         logger.warn(
           "AI generation failed, falling back to local",
           error as Error
         );
       }
+    } else {
+      logger.info(
+        `Skipping AI generation: useAI=${useAI}, aiToken=${this.aiToken ? "SET" : "NOT SET"}`
+      );
     }
 
     // Fallback to local generation
+    logger.info(`Using local generation`);
     return this.generateLocal(topic);
   }
 
@@ -88,50 +100,64 @@ export class AIService {
    * Generate idea using AI
    */
   private async generateWithAI(topic?: string): Promise<GeneratedIdea> {
-    logger.debug(
-      `Generating AI idea with ${this.aiProvider} for topic: ${topic || "random"}`
+    logger.info(
+      `generateWithAI START: provider=${this.aiProvider}, topic=${topic || "random"}`
     );
 
     const prompt = this.buildPrompt(topic);
+    logger.info(`Prompt built, calling API with retry...`);
 
-    const idea = await retry(
-      () => {
-        switch (this.aiProvider) {
-          case "groq":
-            return this.callGroqAPI(prompt);
-          case "gemini":
-            return this.callGeminiAPI(prompt);
-          case "huggingface":
-            return this.callHuggingFaceAPI(prompt);
-          default:
-            return this.callGroqAPI(prompt);
+    try {
+      const idea = await retry(
+        () => {
+          logger.info(`Retry attempt for ${this.aiProvider} API...`);
+          switch (this.aiProvider) {
+            case "groq":
+              return this.callGroqAPI(prompt);
+            case "gemini":
+              return this.callGeminiAPI(prompt);
+            case "huggingface":
+              return this.callHuggingFaceAPI(prompt);
+            default:
+              return this.callGroqAPI(prompt);
+          }
+        },
+        {
+          maxAttempts: 1, // Only 1 attempt for faster fallback
+          initialDelay: 500,
         }
-      },
-      {
-        maxAttempts: 1, // Only 1 attempt for faster fallback
-        initialDelay: 500,
-      }
-    );
+      );
 
-    return {
-      text: idea,
-      topic,
-      generatedBy: "ai",
-      timestamp: new Date(),
-    };
+      logger.info(`generateWithAI SUCCESS: got idea of length ${idea.length}`);
+
+      return {
+        text: idea,
+        topic,
+        generatedBy: "ai",
+        timestamp: new Date(),
+      };
+    } catch (error) {
+      logger.error(`generateWithAI FAILED:`, error as Error);
+      throw error;
+    }
   }
 
   /**
    * Call Groq API (OpenAI-compatible)
    */
   private async callGroqAPI(prompt: string): Promise<string> {
+    logger.info(`callGroqAPI START: timeout=${Constants.REQUEST_TIMEOUT}ms`);
+
     const controller = new AbortController();
-    const timeout = setTimeout(
-      () => controller.abort(),
-      Constants.REQUEST_TIMEOUT
-    );
+    const timeout = setTimeout(() => {
+      logger.warn(
+        `Groq API timeout after ${Constants.REQUEST_TIMEOUT}ms, aborting...`
+      );
+      controller.abort();
+    }, Constants.REQUEST_TIMEOUT);
 
     try {
+      logger.info(`Sending request to Groq API...`);
       const response = await fetch(
         "https://api.groq.com/openai/v1/chat/completions",
         {
@@ -155,8 +181,11 @@ export class AIService {
         }
       );
 
+      logger.info(`Groq API response received: status=${response.status}`);
+
       if (!response.ok) {
         const errorText = await response.text();
+        logger.error(`Groq API error: ${response.status} - ${errorText}`);
         throw createError(
           `Groq API error: ${response.status} - ${errorText}`,
           ErrorType.AI_SERVICE
@@ -166,14 +195,20 @@ export class AIService {
       const data = (await response.json()) as GroqResponse;
 
       if (!data.choices?.[0]?.message?.content) {
+        logger.error(`Invalid Groq response format`);
         throw createError("Invalid Groq response format", ErrorType.AI_SERVICE);
       }
 
+      logger.info(
+        `Groq API SUCCESS: content length=${data.choices[0].message.content.length}`
+      );
       return data.choices[0].message.content.trim();
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
+        logger.error(`Groq API request aborted (timeout)`);
         throw createError("AI request timeout", ErrorType.AI_SERVICE, error);
       }
+      logger.error(`Groq API error:`, error as Error);
       throw error;
     } finally {
       clearTimeout(timeout);
