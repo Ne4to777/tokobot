@@ -36,12 +36,23 @@ interface GeminiResponse {
 }
 
 /**
+ * Groq API response type (OpenAI-compatible)
+ */
+interface GroqResponse {
+  choices: Array<{
+    message: {
+      content: string;
+    };
+  }>;
+}
+
+/**
  * AI Service Class
  */
 export class AIService {
   private readonly aiToken?: string;
   private readonly aiEnabled: boolean;
-  private readonly aiProvider: "gemini" | "huggingface";
+  private readonly aiProvider: "groq" | "gemini" | "huggingface";
 
   constructor() {
     this.aiToken = config.aiToken;
@@ -84,10 +95,18 @@ export class AIService {
     const prompt = this.buildPrompt(topic);
 
     const idea = await retry(
-      () =>
-        this.aiProvider === "gemini"
-          ? this.callGeminiAPI(prompt)
-          : this.callHuggingFaceAPI(prompt),
+      () => {
+        switch (this.aiProvider) {
+          case "groq":
+            return this.callGroqAPI(prompt);
+          case "gemini":
+            return this.callGeminiAPI(prompt);
+          case "huggingface":
+            return this.callHuggingFaceAPI(prompt);
+          default:
+            return this.callGroqAPI(prompt);
+        }
+      },
       {
         maxAttempts: 2,
         initialDelay: 1000,
@@ -100,6 +119,65 @@ export class AIService {
       generatedBy: "ai",
       timestamp: new Date(),
     };
+  }
+
+  /**
+   * Call Groq API (OpenAI-compatible)
+   */
+  private async callGroqAPI(prompt: string): Promise<string> {
+    const controller = new AbortController();
+    const timeout = setTimeout(
+      () => controller.abort(),
+      Constants.REQUEST_TIMEOUT
+    );
+
+    try {
+      const response = await fetch(
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${this.aiToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model: Constants.GROQ_MODEL,
+            messages: [
+              {
+                role: "user",
+                content: prompt,
+              },
+            ],
+            temperature: Constants.GROQ_TEMPERATURE,
+            max_tokens: Constants.GROQ_MAX_TOKENS,
+          }),
+          signal: controller.signal,
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw createError(
+          `Groq API error: ${response.status} - ${errorText}`,
+          ErrorType.AI_SERVICE
+        );
+      }
+
+      const data = (await response.json()) as GroqResponse;
+
+      if (!data.choices?.[0]?.message?.content) {
+        throw createError("Invalid Groq response format", ErrorType.AI_SERVICE);
+      }
+
+      return data.choices[0].message.content.trim();
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        throw createError("AI request timeout", ErrorType.AI_SERVICE, error);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
   /**

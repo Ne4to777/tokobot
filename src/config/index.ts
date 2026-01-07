@@ -23,14 +23,27 @@ function validateEnv(): void {
 export function getConfig(): BotConfig {
   validateEnv();
 
-  // Определяем AI провайдера
-  const aiProvider = (process.env.AI_PROVIDER || "gemini") as
+  // Определяем AI провайдера (Groq по умолчанию для РФ)
+  const aiProvider = (process.env.AI_PROVIDER || "groq") as
+    | "groq"
     | "gemini"
     | "huggingface";
-  const aiToken =
-    aiProvider === "gemini"
-      ? process.env.GEMINI_API_KEY
-      : process.env.HUGGINGFACE_TOKEN;
+
+  // Получаем токен в зависимости от провайдера
+  let aiToken: string | undefined;
+  switch (aiProvider) {
+    case "groq":
+      aiToken = process.env.GROQ_API_KEY;
+      break;
+    case "gemini":
+      aiToken = process.env.GEMINI_API_KEY;
+      break;
+    case "huggingface":
+      aiToken = process.env.HUGGINGFACE_TOKEN;
+      break;
+    default:
+      aiToken = process.env.GROQ_API_KEY;
+  }
 
   return {
     token: process.env.BOT_TOKEN!,
@@ -73,6 +86,11 @@ export const Constants = {
   GEMINI_MODEL: "gemini-2.0-flash-exp",
   GEMINI_MAX_TOKENS: 500,
   GEMINI_TEMPERATURE: 0.9,
+
+  // AI settings - Groq (рекомендуется для РФ)
+  GROQ_MODEL: "llama-3.3-70b-versatile",
+  GROQ_MAX_TOKENS: 500,
+  GROQ_TEMPERATURE: 0.9,
 
   // Timeouts
   REQUEST_TIMEOUT: 8000, // 8 seconds (Vercel free tier is 10s)
