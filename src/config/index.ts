@@ -93,7 +93,7 @@ export const Constants = {
   GROQ_TEMPERATURE: 0.9,
 
   // Timeouts
-  REQUEST_TIMEOUT: 8000, // 8 seconds (Vercel free tier is 10s)
+  REQUEST_TIMEOUT: 5000, // 5 seconds (faster fallback to local generation)
 
   // Rate limiting
   RATE_LIMIT_WINDOW: 60000, // 1 minute

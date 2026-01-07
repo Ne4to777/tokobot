@@ -108,8 +108,8 @@ export class AIService {
         }
       },
       {
-        maxAttempts: 2,
-        initialDelay: 1000,
+        maxAttempts: 1, // Only 1 attempt for faster fallback
+        initialDelay: 500,
       }
     );
 
