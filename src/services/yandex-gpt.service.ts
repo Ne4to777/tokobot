@@ -114,7 +114,9 @@ export async function callYandexGPT(
     }
 
     const generatedText = data.result.alternatives[0].message.text.trim();
-    logger.info(`YandexGPT response received: ${generatedText.substring(0, 50)}...`);
+    logger.info(
+      `YandexGPT response received: ${generatedText.substring(0, 50)}...`
+    );
     return generatedText;
   } catch (error) {
     clearTimeout(timeoutId);
@@ -127,4 +129,3 @@ export async function callYandexGPT(
     throw error;
   }
 }
-

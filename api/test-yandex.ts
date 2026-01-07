@@ -128,7 +128,9 @@ export default async function handler(req: any, res: any) {
     totalTests: diagnostics.tests.length,
   };
 
-  console.log(`\n📊 Summary: ${passedTests}/${diagnostics.tests.length} tests passed`);
+  console.log(
+    `\n📊 Summary: ${passedTests}/${diagnostics.tests.length} tests passed`
+  );
   console.log(`⏱️ Total duration: ${totalDuration}ms`);
 
   res.status(allTestsPassed ? 200 : 500).json(diagnostics);
