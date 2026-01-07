@@ -91,31 +91,19 @@ export class AIService {
   ): Promise<GeneratedIdea> {
     const { topic, useAI = this.aiEnabled } = options;
 
-    logger.info(
-      `generateIdea called: topic=${topic}, useAI=${useAI}, aiEnabled=${this.aiEnabled}, aiToken=${this.aiToken ? "SET" : "NOT SET"}, aiProvider=${this.aiProvider}`
-    );
-
     // Try AI if enabled and requested
     if (useAI && this.aiToken) {
-      logger.info(`Attempting AI generation with provider: ${this.aiProvider}`);
       try {
-        const result = await this.generateWithAI(topic);
-        logger.info(`AI generation SUCCESS`);
-        return result;
+        return await this.generateWithAI(topic);
       } catch (error) {
         logger.warn(
           "AI generation failed, falling back to local",
           error as Error
         );
       }
-    } else {
-      logger.info(
-        `Skipping AI generation: useAI=${useAI}, aiToken=${this.aiToken ? "SET" : "NOT SET"}`
-      );
     }
 
     // Fallback to local generation
-    logger.info(`Using local generation`);
     return this.generateLocal(topic);
   }
 
@@ -123,17 +111,11 @@ export class AIService {
    * Generate idea using AI
    */
   private async generateWithAI(topic?: string): Promise<GeneratedIdea> {
-    logger.info(
-      `generateWithAI START: provider=${this.aiProvider}, topic=${topic || "random"}`
-    );
-
     const prompt = this.buildPrompt(topic);
-    logger.info(`Prompt built, calling API with retry...`);
 
     try {
       const idea = await retry(
         () => {
-          logger.info(`Retry attempt for ${this.aiProvider} API...`);
           switch (this.aiProvider) {
             case "yandexgpt":
               return this.callYandexGPTAPI(prompt);
@@ -153,8 +135,6 @@ export class AIService {
         }
       );
 
-      logger.info(`generateWithAI SUCCESS: got idea of length ${idea.length}`);
-
       return {
         text: idea,
         topic,
@@ -162,7 +142,7 @@ export class AIService {
         timestamp: new Date(),
       };
     } catch (error) {
-      logger.error(`generateWithAI FAILED:`, error as Error);
+      logger.error(`AI generation failed:`, error as Error);
       throw error;
     }
   }
@@ -171,12 +151,7 @@ export class AIService {
    * Call YandexGPT API
    */
   private async callYandexGPTAPI(prompt: string): Promise<string> {
-    logger.info(
-      `callYandexGPTAPI START: timeout=${Constants.REQUEST_TIMEOUT}ms`
-    );
-
     if (!this.yandexFolderId) {
-      logger.error("YANDEX_FOLDER_ID not configured");
       throw createError(
         "YANDEX_FOLDER_ID not configured in environment",
         ErrorType.AI_SERVICE
@@ -185,9 +160,7 @@ export class AIService {
 
     const controller = new AbortController();
     const timeout = setTimeout(() => {
-      logger.warn(
-        `YandexGPT API timeout after ${Constants.REQUEST_TIMEOUT}ms, aborting...`
-      );
+      logger.warn(`YandexGPT timeout (${Constants.REQUEST_TIMEOUT}ms)`);
       controller.abort();
     }, Constants.REQUEST_TIMEOUT);
 
@@ -207,15 +180,6 @@ export class AIService {
         ],
       };
 
-      logger.info(`🔍 Request details:`);
-      logger.info(
-        `  URL: https://llm.api.cloud.yandex.net/foundationModels/v1/completion`
-      );
-      logger.info(`  Folder ID: ${this.yandexFolderId}`);
-      logger.info(`  Model URI: ${requestBody.modelUri}`);
-      logger.info(`  API Key: ${this.aiToken?.substring(0, 15)}...`);
-
-      logger.info(`Sending request to YandexGPT API...`);
       const response = await fetch(
         "https://llm.api.cloud.yandex.net/foundationModels/v1/completion",
         {
@@ -230,29 +194,19 @@ export class AIService {
         }
       );
 
-      logger.info(
-        `✅ YandexGPT API response received: status=${response.status}`
-      );
-
       if (!response.ok) {
         const errorText = await response.text();
-        logger.error(
-          `❌ YandexGPT API error response: Status ${response.status}`,
-          undefined,
-          {
-            status: response.status,
-            body: errorText,
-          }
-        );
-
         let errorDetails = errorText;
         try {
           const errorJson = JSON.parse(errorText);
-          logger.error(`  Parsed error:`, undefined, { errorJson });
-          errorDetails = JSON.stringify(errorJson, null, 2);
+          errorDetails = errorJson.message || errorText;
         } catch {
           // Error body is not JSON
         }
+
+        logger.error(
+          `YandexGPT API error: ${response.status} - ${errorDetails}`
+        );
 
         throw createError(
           `YandexGPT API error: ${response.status} - ${errorDetails}`,
@@ -260,14 +214,9 @@ export class AIService {
         );
       }
 
-      logger.info(`Parsing YandexGPT response...`);
       const data = (await response.json()) as YandexGPTResponse;
-      logger.info(`Response data:`, { data });
 
       if (!data.result?.alternatives?.[0]?.message?.text) {
-        logger.error(`❌ Invalid YandexGPT response format`, undefined, {
-          data,
-        });
         throw createError(
           "Invalid YandexGPT response format",
           ErrorType.AI_SERVICE
@@ -275,19 +224,11 @@ export class AIService {
       }
 
       const generatedText = data.result.alternatives[0].message.text.trim();
-      logger.info(
-        `✅ YandexGPT API SUCCESS: content length=${generatedText.length}`
-      );
       return generatedText;
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
-        logger.error(
-          `❌ YandexGPT API request aborted (timeout after ${Constants.REQUEST_TIMEOUT}ms)`,
-          error
-        );
         throw createError("AI request timeout", ErrorType.AI_SERVICE, error);
       }
-      logger.error(`❌ YandexGPT API error`, error as Error);
       throw error;
     } finally {
       clearTimeout(timeout);

@@ -23,27 +23,6 @@ function validateEnv(): void {
 export function getConfig(): BotConfig {
   validateEnv();
 
-  // 🔍 ДИАГНОСТИКА: Логируем все переменные окружения
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-  console.log("🔍 ДИАГНОСТИКА ПЕРЕМЕННЫХ ОКРУЖЕНИЯ:");
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-  console.log("BOT_TOKEN:", process.env.BOT_TOKEN ? "✅ SET" : "❌ NOT SET");
-  console.log(
-    "YANDEX_API_KEY:",
-    process.env.YANDEX_API_KEY
-      ? `✅ SET (${process.env.YANDEX_API_KEY.substring(0, 10)}...)`
-      : "❌ NOT SET"
-  );
-  console.log(
-    "YANDEX_FOLDER_ID:",
-    process.env.YANDEX_FOLDER_ID
-      ? `✅ SET (${process.env.YANDEX_FOLDER_ID})`
-      : "❌ NOT SET"
-  );
-  console.log("AI_PROVIDER:", process.env.AI_PROVIDER || "yandexgpt (default)");
-  console.log("NODE_ENV:", process.env.NODE_ENV || "development (default)");
-  console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
   // Определяем AI провайдера (YandexGPT по умолчанию для РФ)
   const aiProvider = (process.env.AI_PROVIDER || "yandexgpt") as
     | "yandexgpt"
@@ -128,7 +107,7 @@ export const Constants = {
   YANDEX_TEMPERATURE: 0.8,
 
   // Timeouts
-  REQUEST_TIMEOUT: 8000, // 8 seconds (must be less than Vercel's 10s limit for fallback to work)
+  REQUEST_TIMEOUT: 5000, // 5 seconds (aggressive timeout for Vercel to ensure fallback works)
 
   // Rate limiting
   RATE_LIMIT_WINDOW: 60000, // 1 minute
