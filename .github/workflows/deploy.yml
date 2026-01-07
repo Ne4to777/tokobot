@@ -72,7 +72,7 @@ jobs:
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
-              repo: context.repo.name,
+              repo: context.repo.repo,
               body: `✅ Preview deployed to: ${{ steps.deploy.outputs.preview_url }}`
             })
 
@@ -103,7 +103,7 @@ jobs:
           script: |
             github.rest.repos.createCommitStatus({
               owner: context.repo.owner,
-              repo: context.repo.name,
+              repo: context.repo.repo,
               sha: context.sha,
               state: 'success',
               target_url: 'https://tokobot-five.vercel.app',
