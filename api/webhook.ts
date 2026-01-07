@@ -60,7 +60,7 @@ export default async (req: any, res: any) => {
     if (req.method === "POST") {
       // Handle Telegram webhook
       await bot.handleUpdate(req.body, res);
-      res.status(200).json({ ok: true });
+      // Response is already sent by Telegraf
     } else if (req.method === "GET") {
       // Health check endpoint
       res.status(200).json({
