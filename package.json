@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@types/estree": "1.0.6",
-    "@types/node": "22.10.7",
+    "@types/node": "^20.19.27",
     "@vitest/coverage-v8": "2.1.9",
     "@vitest/ui": "2.1.9",
     "prettier": "3.4.2",
