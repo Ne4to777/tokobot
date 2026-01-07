@@ -27,9 +27,10 @@ export const ideaHandler: CommandHandler = async (ctx) => {
       `Idea received from ${idea.generatedBy}: ${idea.text.substring(0, 50)}...`
     );
 
-    // Send idea
+    // Send idea with formatting
     logger.info("Sending reply to user...");
-    await ctx.reply(`💡 ${idea.text}`);
+    const formattedMessage = `💡 <b>AI-FIRST БИЗНЕС-ИДЕЯ</b>\n\n${idea.text}`;
+    await ctx.reply(formattedMessage, { parse_mode: "HTML" });
     logger.info("Reply sent successfully!");
 
     // Log result
