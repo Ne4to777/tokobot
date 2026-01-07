@@ -330,6 +330,7 @@ export class AIService {
    */
   private buildPrompt(topic?: string): string {
     let prompt =
+      "You are a business idea generator. IMPORTANT: Respond in Russian language.\n\n" +
       "Generate a creative business idea for a small team (2-5 people) where " +
       "Artificial Intelligence is THE CORE PRODUCT, not just a feature. " +
       "The AI should be the main value proposition and competitive advantage.";
@@ -338,7 +339,7 @@ export class AIService {
       prompt += `\n\nFocus on: ${topic}`;
     }
 
-    prompt += "\n\nBusiness idea:";
+    prompt += "\n\nBusiness idea (in Russian):";
 
     return prompt;
   }
