@@ -9,9 +9,8 @@ import {
   IdeaGenerationOptions,
 } from "../types/index.js";
 import { createError } from "../utils/errors.js";
-import { randomElement, retry } from "../utils/helpers.js";
+import { retry } from "../utils/helpers.js";
 import { createLogger } from "../utils/logger.js";
-import { IDEAS_DATABASE } from "./data/ideas.js";
 
 const logger = createLogger("AIService");
 
@@ -89,25 +88,18 @@ export class AIService {
   async generateIdea(
     options: IdeaGenerationOptions = {}
   ): Promise<GeneratedIdea> {
-    const { topic, useAI = this.aiEnabled } = options;
+    const { topic } = options;
 
-    // Try AI if enabled and requested
-    if (useAI && this.aiToken) {
-      try {
-        return await this.generateWithAI(topic);
-      } catch (error) {
-        logger.warn(
-          "AI generation failed, falling back to local",
-          error as Error
-        );
-      }
+    // AI is required
+    if (!this.aiToken) {
+      throw createError(
+        "AI service is not configured. Please set YANDEX_API_KEY or other AI provider credentials.",
+        ErrorType.AI_SERVICE
+      );
     }
 
-    // Fallback to local generation
-    logger.info("Generating local idea...");
-    const idea = this.generateLocal(topic);
-    logger.info(`Local idea generated: ${idea.text.substring(0, 50)}...`);
-    return idea;
+    // Generate with AI (no fallback)
+    return await this.generateWithAI(topic);
   }
 
   /**
@@ -432,31 +424,6 @@ export class AIService {
   }
 
   /**
-   * Generate idea from local database
-   */
-  private generateLocal(topic?: string): GeneratedIdea {
-    logger.debug(`Generating local idea for topic: ${topic || "random"}`);
-
-    let ideas: readonly string[];
-
-    if (topic && topic in IDEAS_DATABASE.topics) {
-      ideas =
-        IDEAS_DATABASE.topics[topic as keyof typeof IDEAS_DATABASE.topics];
-    } else {
-      ideas = IDEAS_DATABASE.general;
-    }
-
-    const text = randomElement(ideas);
-
-    return {
-      text,
-      topic,
-      generatedBy: "local",
-      timestamp: new Date(),
-    };
-  }
-
-  /**
    * Build prompt for AI
    */
   private buildPrompt(topic?: string): string {
@@ -488,7 +455,7 @@ export class AIService {
    * Get available topics
    */
   getAvailableTopics(): string[] {
-    return Object.keys(IDEAS_DATABASE.topics);
+    return ["sales", "marketing", "hr", "product", "support", "finance"];
   }
 }
 
