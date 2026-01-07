@@ -72,6 +72,7 @@ export interface BotConfig {
   environment: "development" | "production";
   aiEnabled: boolean;
   aiToken?: string;
+  aiProvider: "gemini" | "huggingface";
   bitrix24Webhook?: string;
 }
 

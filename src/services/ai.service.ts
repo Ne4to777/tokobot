@@ -23,15 +23,30 @@ interface HuggingFaceResponse {
 }
 
 /**
+ * Google Gemini API response type
+ */
+interface GeminiResponse {
+  candidates: Array<{
+    content: {
+      parts: Array<{
+        text: string;
+      }>;
+    };
+  }>;
+}
+
+/**
  * AI Service Class
  */
 export class AIService {
   private readonly aiToken?: string;
   private readonly aiEnabled: boolean;
+  private readonly aiProvider: "gemini" | "huggingface";
 
   constructor() {
     this.aiToken = config.aiToken;
     this.aiEnabled = config.aiEnabled;
+    this.aiProvider = config.aiProvider;
   }
 
   /**
@@ -62,14 +77,22 @@ export class AIService {
    * Generate idea using AI
    */
   private async generateWithAI(topic?: string): Promise<GeneratedIdea> {
-    logger.debug(`Generating AI idea for topic: ${topic || "random"}`);
+    logger.debug(
+      `Generating AI idea with ${this.aiProvider} for topic: ${topic || "random"}`
+    );
 
     const prompt = this.buildPrompt(topic);
 
-    const idea = await retry(() => this.callHuggingFaceAPI(prompt), {
-      maxAttempts: 2,
-      initialDelay: 1000,
-    });
+    const idea = await retry(
+      () =>
+        this.aiProvider === "gemini"
+          ? this.callGeminiAPI(prompt)
+          : this.callHuggingFaceAPI(prompt),
+      {
+        maxAttempts: 2,
+        initialDelay: 1000,
+      }
+    );
 
     return {
       text: idea,
@@ -77,6 +100,71 @@ export class AIService {
       generatedBy: "ai",
       timestamp: new Date(),
     };
+  }
+
+  /**
+   * Call Google Gemini API
+   */
+  private async callGeminiAPI(prompt: string): Promise<string> {
+    const controller = new AbortController();
+    const timeout = setTimeout(
+      () => controller.abort(),
+      Constants.REQUEST_TIMEOUT
+    );
+
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${Constants.GEMINI_MODEL}:generateContent?key=${this.aiToken}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: prompt,
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              temperature: Constants.GEMINI_TEMPERATURE,
+              maxOutputTokens: Constants.GEMINI_MAX_TOKENS,
+            },
+          }),
+          signal: controller.signal,
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw createError(
+          `Gemini API error: ${response.status} - ${errorText}`,
+          ErrorType.AI_SERVICE
+        );
+      }
+
+      const data = (await response.json()) as GeminiResponse;
+
+      if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        throw createError(
+          "Invalid Gemini response format",
+          ErrorType.AI_SERVICE
+        );
+      }
+
+      return data.candidates[0].content.parts[0].text.trim();
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        throw createError("AI request timeout", ErrorType.AI_SERVICE, error);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
   /**

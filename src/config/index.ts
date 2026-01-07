@@ -23,12 +23,22 @@ function validateEnv(): void {
 export function getConfig(): BotConfig {
   validateEnv();
 
+  // Определяем AI провайдера
+  const aiProvider = (process.env.AI_PROVIDER || "gemini") as
+    | "gemini"
+    | "huggingface";
+  const aiToken =
+    aiProvider === "gemini"
+      ? process.env.GEMINI_API_KEY
+      : process.env.HUGGINGFACE_TOKEN;
+
   return {
     token: process.env.BOT_TOKEN!,
     environment:
       (process.env.NODE_ENV as "development" | "production") || "development",
-    aiEnabled: !!process.env.HUGGINGFACE_TOKEN,
-    aiToken: process.env.HUGGINGFACE_TOKEN,
+    aiEnabled: !!aiToken,
+    aiToken,
+    aiProvider,
     bitrix24Webhook: process.env.BITRIX24_WEBHOOK,
   };
 }
@@ -54,10 +64,15 @@ export const Constants = {
     "finance",
   ] as const,
 
-  // AI settings
+  // AI settings - HuggingFace
   AI_MODEL: "mistralai/Mistral-7B-Instruct-v0.2",
   AI_MAX_TOKENS: 200,
   AI_TEMPERATURE: 0.8,
+
+  // AI settings - Gemini
+  GEMINI_MODEL: "gemini-2.0-flash-exp",
+  GEMINI_MAX_TOKENS: 500,
+  GEMINI_TEMPERATURE: 0.9,
 
   // Timeouts
   REQUEST_TIMEOUT: 8000, // 8 seconds (Vercel free tier is 10s)
