@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   analyticsService,
   EventType,
-} from "../../services/analytics.service.js";
+} from "../../src/services/analytics.service.js";
 
 describe("AnalyticsService", () => {
   beforeEach(() => {

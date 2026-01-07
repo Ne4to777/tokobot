@@ -3,10 +3,10 @@
  * Provides analytics and statistics
  */
 
-import { config } from "../config/index.js";
-import { analyticsService } from "../services/analytics.service.js";
-import { monitoringService } from "../services/monitoring.service.js";
-import { createLogger } from "../utils/logger.js";
+import { config } from "../src/config/index.js";
+import { analyticsService } from "../src/services/analytics.service.js";
+import { monitoringService } from "../src/services/monitoring.service.js";
+import { createLogger } from "../src/utils/logger.js";
 
 const logger = createLogger("Dashboard");
 

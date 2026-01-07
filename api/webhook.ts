@@ -3,9 +3,9 @@
  */
 
 import { Telegraf } from "telegraf";
-import { config } from "../config/index.js";
-import { BotContext } from "../types/index.js";
-import { createLogger } from "../utils/logger.js";
+import { config } from "../src/config/index.js";
+import { BotContext } from "../src/types/index.js";
+import { createLogger } from "../src/utils/logger.js";
 
 // Middleware
 import {
@@ -13,7 +13,7 @@ import {
   errorHandlerMiddleware,
   loggingMiddleware,
   rateLimitMiddleware,
-} from "../middleware/index.js";
+} from "../src/middleware/index.js";
 
 // Handlers
 import {
@@ -22,7 +22,7 @@ import {
   helpHandler,
   ideaHandler,
   startHandler,
-} from "../handlers/index.js";
+} from "../src/handlers/index.js";
 
 const logger = createLogger("Webhook");
 

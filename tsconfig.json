@@ -12,13 +12,7 @@
   },
   "include": [
     "api/**/*",
-    "lib/**/*",
-    "types/**/*",
-    "config/**/*",
-    "utils/**/*",
-    "middleware/**/*",
-    "services/**/*",
-    "handlers/**/*",
+    "src/**/*",
     "tests/**/*",
     "*.ts"
   ],

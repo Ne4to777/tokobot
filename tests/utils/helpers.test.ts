@@ -3,7 +3,7 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
-import { randomElement, retry } from "../../utils/helpers.js";
+import { randomElement, retry } from "../../src/utils/helpers.js";
 
 describe("helpers", () => {
   describe("randomElement", () => {
