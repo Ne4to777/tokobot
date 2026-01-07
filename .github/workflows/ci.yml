@@ -22,13 +22,11 @@ jobs:
           cache: "npm"
           cache-dependency-path: package-lock.json
 
+      - name: Clear npm cache
+        run: npm cache clean --force
+
       - name: Install dependencies
-        run: |
-          npm ci || {
-            echo "npm ci failed, trying npm install..."
-            rm -rf node_modules
-            npm install
-          }
+        run: npm install
 
       - name: Run TypeScript type check
         run: npm run typecheck
@@ -51,13 +49,11 @@ jobs:
           cache: "npm"
           cache-dependency-path: package-lock.json
 
+      - name: Clear npm cache
+        run: npm cache clean --force
+
       - name: Install dependencies
-        run: |
-          npm ci || {
-            echo "npm ci failed, trying npm install..."
-            rm -rf node_modules
-            npm install
-          }
+        run: npm install
 
       - name: Run tests (placeholder)
         run: echo "Tests will be added later"
@@ -79,13 +75,11 @@ jobs:
           cache: "npm"
           cache-dependency-path: package-lock.json
 
+      - name: Clear npm cache
+        run: npm cache clean --force
+
       - name: Install dependencies
-        run: |
-          npm ci || {
-            echo "npm ci failed, trying npm install..."
-            rm -rf node_modules
-            npm install
-          }
+        run: npm install
 
       - name: Check build
         run: echo "Build check passed (no build step needed for serverless)"
