@@ -107,7 +107,7 @@ export const Constants = {
   YANDEX_TEMPERATURE: 0.8,
 
   // Timeouts
-  REQUEST_TIMEOUT: 5000, // 5 seconds (aggressive timeout for Vercel to ensure fallback works)
+  REQUEST_TIMEOUT: 15000, // 15 seconds (increased since YandexGPT works in test-yandex)
 
   // Rate limiting
   RATE_LIMIT_WINDOW: 60000, // 1 minute

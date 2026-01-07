@@ -20,11 +20,7 @@ export const ideaHandler: CommandHandler = async (ctx) => {
   logger.info(`Idea command received with topic: ${topic || "random"}`);
 
   try {
-    // Show typing indicator
-    await ctx.sendChatAction("typing");
-    logger.info("Typing indicator sent");
-
-    // Generate idea
+    // Generate idea (removed typing indicator - may cause blocking)
     logger.info("Calling aiService.generateIdea...");
     const idea = await aiService.generateIdea({ topic });
     logger.info(

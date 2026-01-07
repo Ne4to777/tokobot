@@ -69,16 +69,8 @@ bot.catch((error, ctx) => {
 export default async (req: any, res: any) => {
   try {
     if (req.method === "POST") {
-      // Handle Telegram webhook with timeout protection
-      const handleUpdatePromise = bot.handleUpdate(req.body, res);
-
-      // Wait for either completion or timeout (9 seconds to stay under Vercel's 10s limit)
-      await Promise.race([
-        handleUpdatePromise,
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error("Bot handler timeout")), 9000)
-        ),
-      ]);
+      // Handle Telegram webhook (removed timeout - let error handlers catch issues)
+      await bot.handleUpdate(req.body, res);
 
       // Ensure response is sent (if not already sent by Telegraf)
       if (!res.headersSent) {
