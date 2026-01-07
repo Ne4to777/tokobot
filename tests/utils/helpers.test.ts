@@ -29,7 +29,7 @@ describe("helpers", () => {
   describe("retry", () => {
     it("should return result on first success", async () => {
       const fn = vi.fn().mockResolvedValue("success");
-      const result = await retry(fn, 3, 100);
+      const result = await retry(fn, { maxAttempts: 3, initialDelay: 100 });
       expect(result).toBe("success");
       expect(fn).toHaveBeenCalledTimes(1);
     });
@@ -41,7 +41,7 @@ describe("helpers", () => {
         .mockRejectedValueOnce(new Error("fail 2"))
         .mockResolvedValue("success");
 
-      const result = await retry(fn, 3, 10);
+      const result = await retry(fn, { maxAttempts: 3, initialDelay: 10 });
       expect(result).toBe("success");
       expect(fn).toHaveBeenCalledTimes(3);
     });
@@ -49,7 +49,9 @@ describe("helpers", () => {
     it("should throw after max retries", async () => {
       const fn = vi.fn().mockRejectedValue(new Error("always fails"));
 
-      await expect(retry(fn, 3, 10)).rejects.toThrow("always fails");
+      await expect(
+        retry(fn, { maxAttempts: 3, initialDelay: 10 })
+      ).rejects.toThrow("always fails");
       expect(fn).toHaveBeenCalledTimes(3);
     });
 
@@ -60,7 +62,7 @@ describe("helpers", () => {
         .mockResolvedValue("success");
 
       const start = Date.now();
-      await retry(fn, 3, 100);
+      await retry(fn, { maxAttempts: 3, initialDelay: 100 });
       const duration = Date.now() - start;
 
       // Should wait at least 100ms before second attempt
