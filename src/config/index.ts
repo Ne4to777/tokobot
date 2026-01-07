@@ -23,8 +23,8 @@ function validateEnv(): void {
 export function getConfig(): BotConfig {
   validateEnv();
 
-  // Определяем AI провайдера (YandexGPT по умолчанию для РФ)
-  const aiProvider = (process.env.AI_PROVIDER || "yandexgpt") as
+  // Определяем AI провайдера (Groq для теста, YandexGPT как fallback)
+  const aiProvider = (process.env.AI_PROVIDER || "groq") as
     | "yandexgpt"
     | "groq"
     | "gemini"
