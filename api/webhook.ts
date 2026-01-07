@@ -52,15 +52,38 @@ bot.on("message", async (ctx) => {
   );
 });
 
+// Catch all unhandled errors in bot
+bot.catch((error, ctx) => {
+  logger.error("Unhandled bot error", error as Error);
+  // Try to notify user
+  ctx
+    .reply("😕 Произошла ошибка. Пожалуйста, попробуйте позже.")
+    .catch((replyError) => {
+      logger.error("Failed to send error notification", replyError as Error);
+    });
+});
+
 /**
  * Vercel serverless function handler
  */
 export default async (req: any, res: any) => {
   try {
     if (req.method === "POST") {
-      // Handle Telegram webhook
-      await bot.handleUpdate(req.body, res);
-      // Response is already sent by Telegraf
+      // Handle Telegram webhook with timeout protection
+      const handleUpdatePromise = bot.handleUpdate(req.body, res);
+
+      // Wait for either completion or timeout (9 seconds to stay under Vercel's 10s limit)
+      await Promise.race([
+        handleUpdatePromise,
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Bot handler timeout")), 9000)
+        ),
+      ]);
+
+      // Ensure response is sent (if not already sent by Telegraf)
+      if (!res.headersSent) {
+        res.status(200).json({ ok: true });
+      }
     } else if (req.method === "GET") {
       // Health check endpoint
       res.status(200).json({
@@ -74,7 +97,9 @@ export default async (req: any, res: any) => {
     }
   } catch (error) {
     logger.error("Webhook error", error as Error);
-    res.status(500).json({ error: "Internal server error" });
+    if (!res.headersSent) {
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
 };
 

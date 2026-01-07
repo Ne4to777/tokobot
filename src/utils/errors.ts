@@ -40,9 +40,17 @@ export async function handleError(
   }
 
   try {
-    await ctx.reply(message);
+    // Add timeout to ctx.reply to prevent hanging
+    await Promise.race([
+      ctx.reply(message),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Reply timeout")), 3000)
+      ),
+    ]);
+    logger.info("Error message sent to user");
   } catch (replyError) {
     logger.error("Failed to send error message to user", replyError as Error);
+    // Even if reply fails, we should not throw - error is already logged
   }
 }
 
