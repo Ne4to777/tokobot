@@ -124,11 +124,11 @@ export const Constants = {
 
   // AI settings - YandexGPT (рекомендуется для РФ - бесплатно!)
   YANDEX_MODEL: "yandexgpt-lite", // Бесплатная модель: 1000 запросов/месяц
-  YANDEX_MAX_TOKENS: 500,
+  YANDEX_MAX_TOKENS: 150, // Уменьшено для Vercel timeout (10s limit)
   YANDEX_TEMPERATURE: 0.8,
 
   // Timeouts
-  REQUEST_TIMEOUT: 15000, // 15 seconds (YandexGPT может быть медленнее, Vercel limit is 10s on free tier)
+  REQUEST_TIMEOUT: 8000, // 8 seconds (must be less than Vercel's 10s limit for fallback to work)
 
   // Rate limiting
   RATE_LIMIT_WINDOW: 60000, // 1 minute
