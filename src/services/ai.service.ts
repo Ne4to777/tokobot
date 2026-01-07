@@ -104,7 +104,10 @@ export class AIService {
     }
 
     // Fallback to local generation
-    return this.generateLocal(topic);
+    logger.info("Generating local idea...");
+    const idea = this.generateLocal(topic);
+    logger.info(`Local idea generated: ${idea.text.substring(0, 50)}...`);
+    return idea;
   }
 
   /**
