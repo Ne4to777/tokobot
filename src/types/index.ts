@@ -72,7 +72,8 @@ export interface BotConfig {
   environment: "development" | "production";
   aiEnabled: boolean;
   aiToken?: string;
-  aiProvider: "groq" | "gemini" | "huggingface";
+  aiProvider: "yandexgpt" | "groq" | "gemini" | "huggingface";
+  yandexFolderId?: string;
   bitrix24Webhook?: string;
 }
 

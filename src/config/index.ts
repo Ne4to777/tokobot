@@ -23,8 +23,9 @@ function validateEnv(): void {
 export function getConfig(): BotConfig {
   validateEnv();
 
-  // Определяем AI провайдера (Groq по умолчанию для РФ)
-  const aiProvider = (process.env.AI_PROVIDER || "groq") as
+  // Определяем AI провайдера (YandexGPT по умолчанию для РФ)
+  const aiProvider = (process.env.AI_PROVIDER || "yandexgpt") as
+    | "yandexgpt"
     | "groq"
     | "gemini"
     | "huggingface";
@@ -32,6 +33,9 @@ export function getConfig(): BotConfig {
   // Получаем токен в зависимости от провайдера
   let aiToken: string | undefined;
   switch (aiProvider) {
+    case "yandexgpt":
+      aiToken = process.env.YANDEX_API_KEY;
+      break;
     case "groq":
       aiToken = process.env.GROQ_API_KEY;
       break;
@@ -42,7 +46,7 @@ export function getConfig(): BotConfig {
       aiToken = process.env.HUGGINGFACE_TOKEN;
       break;
     default:
-      aiToken = process.env.GROQ_API_KEY;
+      aiToken = process.env.YANDEX_API_KEY;
   }
 
   return {
@@ -52,6 +56,7 @@ export function getConfig(): BotConfig {
     aiEnabled: !!aiToken,
     aiToken,
     aiProvider,
+    yandexFolderId: process.env.YANDEX_FOLDER_ID,
     bitrix24Webhook: process.env.BITRIX24_WEBHOOK,
   };
 }
@@ -87,13 +92,18 @@ export const Constants = {
   GEMINI_MAX_TOKENS: 500,
   GEMINI_TEMPERATURE: 0.9,
 
-  // AI settings - Groq (рекомендуется для РФ)
+  // AI settings - Groq
   GROQ_MODEL: "llama-3.3-70b-versatile",
   GROQ_MAX_TOKENS: 500,
   GROQ_TEMPERATURE: 0.9,
 
+  // AI settings - YandexGPT (рекомендуется для РФ - бесплатно!)
+  YANDEX_MODEL: "yandexgpt-lite", // Бесплатная модель: 1000 запросов/месяц
+  YANDEX_MAX_TOKENS: 500,
+  YANDEX_TEMPERATURE: 0.8,
+
   // Timeouts
-  REQUEST_TIMEOUT: 5000, // 5 seconds (faster fallback to local generation)
+  REQUEST_TIMEOUT: 10000, // 10 seconds (YandexGPT может быть медленнее)
 
   // Rate limiting
   RATE_LIMIT_WINDOW: 60000, // 1 minute

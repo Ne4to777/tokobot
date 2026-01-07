@@ -47,17 +47,40 @@ interface GroqResponse {
 }
 
 /**
+ * YandexGPT API response type
+ */
+interface YandexGPTResponse {
+  result: {
+    alternatives: Array<{
+      message: {
+        role: string;
+        text: string;
+      };
+      status: string;
+    }>;
+    usage: {
+      inputTextTokens: string;
+      completionTokens: string;
+      totalTokens: string;
+    };
+    modelVersion: string;
+  };
+}
+
+/**
  * AI Service Class
  */
 export class AIService {
   private readonly aiToken?: string;
   private readonly aiEnabled: boolean;
-  private readonly aiProvider: "groq" | "gemini" | "huggingface";
+  private readonly aiProvider: "yandexgpt" | "groq" | "gemini" | "huggingface";
+  private readonly yandexFolderId?: string;
 
   constructor() {
     this.aiToken = config.aiToken;
     this.aiEnabled = config.aiEnabled;
     this.aiProvider = config.aiProvider;
+    this.yandexFolderId = config.yandexFolderId;
   }
 
   /**
@@ -112,6 +135,8 @@ export class AIService {
         () => {
           logger.info(`Retry attempt for ${this.aiProvider} API...`);
           switch (this.aiProvider) {
+            case "yandexgpt":
+              return this.callYandexGPTAPI(prompt);
             case "groq":
               return this.callGroqAPI(prompt);
             case "gemini":
@@ -119,7 +144,7 @@ export class AIService {
             case "huggingface":
               return this.callHuggingFaceAPI(prompt);
             default:
-              return this.callGroqAPI(prompt);
+              return this.callYandexGPTAPI(prompt);
           }
         },
         {
@@ -139,6 +164,97 @@ export class AIService {
     } catch (error) {
       logger.error(`generateWithAI FAILED:`, error as Error);
       throw error;
+    }
+  }
+
+  /**
+   * Call YandexGPT API
+   */
+  private async callYandexGPTAPI(prompt: string): Promise<string> {
+    logger.info(
+      `callYandexGPTAPI START: timeout=${Constants.REQUEST_TIMEOUT}ms`
+    );
+
+    if (!this.yandexFolderId) {
+      logger.error("YANDEX_FOLDER_ID not configured");
+      throw createError(
+        "YANDEX_FOLDER_ID not configured in environment",
+        ErrorType.AI_SERVICE
+      );
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => {
+      logger.warn(
+        `YandexGPT API timeout after ${Constants.REQUEST_TIMEOUT}ms, aborting...`
+      );
+      controller.abort();
+    }, Constants.REQUEST_TIMEOUT);
+
+    try {
+      logger.info(`Sending request to YandexGPT API...`);
+      const response = await fetch(
+        "https://llm.api.cloud.yandex.net/foundationModels/v1/completion",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Api-Key ${this.aiToken}`,
+            "Content-Type": "application/json",
+            "x-folder-id": this.yandexFolderId,
+          },
+          body: JSON.stringify({
+            modelUri: `gpt://${this.yandexFolderId}/${Constants.YANDEX_MODEL}`,
+            completionOptions: {
+              stream: false,
+              temperature: Constants.YANDEX_TEMPERATURE,
+              maxTokens: String(Constants.YANDEX_MAX_TOKENS),
+            },
+            messages: [
+              {
+                role: "user",
+                text: prompt,
+              },
+            ],
+          }),
+          signal: controller.signal,
+        }
+      );
+
+      logger.info(`YandexGPT API response received: status=${response.status}`);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        logger.error(`YandexGPT API error: ${response.status} - ${errorText}`);
+        throw createError(
+          `YandexGPT API error: ${response.status} - ${errorText}`,
+          ErrorType.AI_SERVICE
+        );
+      }
+
+      const data = (await response.json()) as YandexGPTResponse;
+
+      if (!data.result?.alternatives?.[0]?.message?.text) {
+        logger.error(`Invalid YandexGPT response format`);
+        throw createError(
+          "Invalid YandexGPT response format",
+          ErrorType.AI_SERVICE
+        );
+      }
+
+      const generatedText = data.result.alternatives[0].message.text.trim();
+      logger.info(
+        `YandexGPT API SUCCESS: content length=${generatedText.length}`
+      );
+      return generatedText;
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") {
+        logger.error(`YandexGPT API request aborted (timeout)`);
+        throw createError("AI request timeout", ErrorType.AI_SERVICE, error);
+      }
+      logger.error(`YandexGPT API error:`, error as Error);
+      throw error;
+    } finally {
+      clearTimeout(timeout);
     }
   }
 
@@ -365,16 +481,25 @@ export class AIService {
    */
   private buildPrompt(topic?: string): string {
     let prompt =
-      "You are a business idea generator. IMPORTANT: Respond in Russian language.\n\n" +
-      "Generate a creative business idea for a small team (2-5 people) where " +
-      "Artificial Intelligence is THE CORE PRODUCT, not just a feature. " +
-      "The AI should be the main value proposition and competitive advantage.";
+      "Ты - генератор бизнес-идей. Придумай креативную бизнес-идею для небольшой команды (2-5 человек), " +
+      "где искусственный интеллект - это ОСНОВНОЙ ПРОДУКТ, а не просто вспомогательная функция. " +
+      "AI должен быть главным ценностным предложением и конкурентным преимуществом.";
 
     if (topic) {
-      prompt += `\n\nFocus on: ${topic}`;
+      const topicTranslations: Record<string, string> = {
+        sales: "продажи",
+        marketing: "маркетинг",
+        hr: "HR и рекрутинг",
+        product: "разработка продуктов",
+        support: "поддержка клиентов",
+        finance: "финансы",
+      };
+      const translatedTopic = topicTranslations[topic] || topic;
+      prompt += `\n\nФокус на области: ${translatedTopic}`;
     }
 
-    prompt += "\n\nBusiness idea (in Russian):";
+    prompt +=
+      "\n\nОпиши идею кратко (2-3 предложения) на русском языке. Бизнес-идея:";
 
     return prompt;
   }
