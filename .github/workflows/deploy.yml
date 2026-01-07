@@ -10,6 +10,11 @@ env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+permissions:
+  statuses: write
+  pull-requests: write
+  contents: read
+
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
