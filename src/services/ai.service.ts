@@ -208,7 +208,9 @@ export class AIService {
       };
 
       logger.info(`🔍 Request details:`);
-      logger.info(`  URL: https://llm.api.cloud.yandex.net/foundationModels/v1/completion`);
+      logger.info(
+        `  URL: https://llm.api.cloud.yandex.net/foundationModels/v1/completion`
+      );
       logger.info(`  Folder ID: ${this.yandexFolderId}`);
       logger.info(`  Model URI: ${requestBody.modelUri}`);
       logger.info(`  API Key: ${this.aiToken?.substring(0, 15)}...`);
@@ -228,15 +230,21 @@ export class AIService {
         }
       );
 
-      logger.info(`✅ YandexGPT API response received: status=${response.status}`);
+      logger.info(
+        `✅ YandexGPT API response received: status=${response.status}`
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
-        logger.error(`❌ YandexGPT API error response: Status ${response.status}`, undefined, {
-          status: response.status,
-          body: errorText,
-        });
-        
+        logger.error(
+          `❌ YandexGPT API error response: Status ${response.status}`,
+          undefined,
+          {
+            status: response.status,
+            body: errorText,
+          }
+        );
+
         let errorDetails = errorText;
         try {
           const errorJson = JSON.parse(errorText);
@@ -245,7 +253,7 @@ export class AIService {
         } catch {
           // Error body is not JSON
         }
-        
+
         throw createError(
           `YandexGPT API error: ${response.status} - ${errorDetails}`,
           ErrorType.AI_SERVICE
@@ -257,7 +265,9 @@ export class AIService {
       logger.info(`Response data:`, { data });
 
       if (!data.result?.alternatives?.[0]?.message?.text) {
-        logger.error(`❌ Invalid YandexGPT response format`, undefined, { data });
+        logger.error(`❌ Invalid YandexGPT response format`, undefined, {
+          data,
+        });
         throw createError(
           "Invalid YandexGPT response format",
           ErrorType.AI_SERVICE
