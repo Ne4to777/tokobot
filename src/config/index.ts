@@ -27,10 +27,7 @@ export function getConfig(): BotConfig {
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
   console.log("🔍 ДИАГНОСТИКА ПЕРЕМЕННЫХ ОКРУЖЕНИЯ:");
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-  console.log(
-    "BOT_TOKEN:",
-    process.env.BOT_TOKEN ? "✅ SET" : "❌ NOT SET"
-  );
+  console.log("BOT_TOKEN:", process.env.BOT_TOKEN ? "✅ SET" : "❌ NOT SET");
   console.log(
     "YANDEX_API_KEY:",
     process.env.YANDEX_API_KEY
@@ -43,14 +40,8 @@ export function getConfig(): BotConfig {
       ? `✅ SET (${process.env.YANDEX_FOLDER_ID})`
       : "❌ NOT SET"
   );
-  console.log(
-    "AI_PROVIDER:",
-    process.env.AI_PROVIDER || "yandexgpt (default)"
-  );
-  console.log(
-    "NODE_ENV:",
-    process.env.NODE_ENV || "development (default)"
-  );
+  console.log("AI_PROVIDER:", process.env.AI_PROVIDER || "yandexgpt (default)");
+  console.log("NODE_ENV:", process.env.NODE_ENV || "development (default)");
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
   // Определяем AI провайдера (YandexGPT по умолчанию для РФ)
@@ -137,7 +128,7 @@ export const Constants = {
   YANDEX_TEMPERATURE: 0.8,
 
   // Timeouts
-  REQUEST_TIMEOUT: 10000, // 10 seconds (YandexGPT может быть медленнее)
+  REQUEST_TIMEOUT: 15000, // 15 seconds (YandexGPT может быть медленнее, Vercel limit is 10s on free tier)
 
   // Rate limiting
   RATE_LIMIT_WINDOW: 60000, // 1 minute

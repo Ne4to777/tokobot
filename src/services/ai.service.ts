@@ -192,6 +192,27 @@ export class AIService {
     }, Constants.REQUEST_TIMEOUT);
 
     try {
+      const requestBody = {
+        modelUri: `gpt://${this.yandexFolderId}/${Constants.YANDEX_MODEL}`,
+        completionOptions: {
+          stream: false,
+          temperature: Constants.YANDEX_TEMPERATURE,
+          maxTokens: String(Constants.YANDEX_MAX_TOKENS),
+        },
+        messages: [
+          {
+            role: "user",
+            text: prompt,
+          },
+        ],
+      };
+
+      logger.info(`🔍 Request details:`);
+      logger.info(`  URL: https://llm.api.cloud.yandex.net/foundationModels/v1/completion`);
+      logger.info(`  Folder ID: ${this.yandexFolderId}`);
+      logger.info(`  Model URI: ${requestBody.modelUri}`);
+      logger.info(`  API Key: ${this.aiToken?.substring(0, 15)}...`);
+
       logger.info(`Sending request to YandexGPT API...`);
       const response = await fetch(
         "https://llm.api.cloud.yandex.net/foundationModels/v1/completion",
@@ -202,39 +223,41 @@ export class AIService {
             "Content-Type": "application/json",
             "x-folder-id": this.yandexFolderId,
           },
-          body: JSON.stringify({
-            modelUri: `gpt://${this.yandexFolderId}/${Constants.YANDEX_MODEL}`,
-            completionOptions: {
-              stream: false,
-              temperature: Constants.YANDEX_TEMPERATURE,
-              maxTokens: String(Constants.YANDEX_MAX_TOKENS),
-            },
-            messages: [
-              {
-                role: "user",
-                text: prompt,
-              },
-            ],
-          }),
+          body: JSON.stringify(requestBody),
           signal: controller.signal,
         }
       );
 
-      logger.info(`YandexGPT API response received: status=${response.status}`);
+      logger.info(`✅ YandexGPT API response received: status=${response.status}`);
 
       if (!response.ok) {
         const errorText = await response.text();
-        logger.error(`YandexGPT API error: ${response.status} - ${errorText}`);
+        logger.error(`❌ YandexGPT API error response: Status ${response.status}`, undefined, {
+          status: response.status,
+          body: errorText,
+        });
+        
+        let errorDetails = errorText;
+        try {
+          const errorJson = JSON.parse(errorText);
+          logger.error(`  Parsed error:`, undefined, { errorJson });
+          errorDetails = JSON.stringify(errorJson, null, 2);
+        } catch {
+          // Error body is not JSON
+        }
+        
         throw createError(
-          `YandexGPT API error: ${response.status} - ${errorText}`,
+          `YandexGPT API error: ${response.status} - ${errorDetails}`,
           ErrorType.AI_SERVICE
         );
       }
 
+      logger.info(`Parsing YandexGPT response...`);
       const data = (await response.json()) as YandexGPTResponse;
+      logger.info(`Response data:`, { data });
 
       if (!data.result?.alternatives?.[0]?.message?.text) {
-        logger.error(`Invalid YandexGPT response format`);
+        logger.error(`❌ Invalid YandexGPT response format`, undefined, { data });
         throw createError(
           "Invalid YandexGPT response format",
           ErrorType.AI_SERVICE
@@ -243,15 +266,18 @@ export class AIService {
 
       const generatedText = data.result.alternatives[0].message.text.trim();
       logger.info(
-        `YandexGPT API SUCCESS: content length=${generatedText.length}`
+        `✅ YandexGPT API SUCCESS: content length=${generatedText.length}`
       );
       return generatedText;
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") {
-        logger.error(`YandexGPT API request aborted (timeout)`);
+        logger.error(
+          `❌ YandexGPT API request aborted (timeout after ${Constants.REQUEST_TIMEOUT}ms)`,
+          error
+        );
         throw createError("AI request timeout", ErrorType.AI_SERVICE, error);
       }
-      logger.error(`YandexGPT API error:`, error as Error);
+      logger.error(`❌ YandexGPT API error`, error as Error);
       throw error;
     } finally {
       clearTimeout(timeout);
