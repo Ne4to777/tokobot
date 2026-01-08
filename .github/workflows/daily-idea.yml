@@ -3,13 +3,13 @@ name: Daily AI Idea
 on:
   schedule:
     # Запуск каждый день в 9:00 UTC (12:00 по МСК)
-    - cron: '0 9 * * *'
+    - cron: "0 9 * * *"
   workflow_dispatch: # Возможность запустить вручную
 
 jobs:
   send-daily-idea:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Send /idea command to bot
         env:
@@ -17,7 +17,7 @@ jobs:
           CHAT_ID: ${{ secrets.DAILY_IDEAS_CHAT_ID }}
         run: |
           echo "Sending daily AI idea..."
-          
+
           # Отправка команды /idea через Telegram Bot API
           curl -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
             -H "Content-Type: application/json" \
@@ -25,6 +25,5 @@ jobs:
               \"chat_id\": \"${CHAT_ID}\",
               \"text\": \"/idea\"
             }"
-          
-          echo "Daily idea sent!"
 
+          echo "Daily idea sent!"
