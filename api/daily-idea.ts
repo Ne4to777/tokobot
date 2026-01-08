@@ -3,8 +3,8 @@
  * Called by GitHub Actions to send scheduled ideas
  */
 
-import { aiService } from "../src/services/ai.service.js";
 import { config } from "../src/config/index.js";
+import { aiService } from "../src/services/ai.service.js";
 
 interface RequestBody {
   chat_id: string;
@@ -56,7 +56,9 @@ export default async (req: any, res: any) => {
     if (!telegramResponse.ok) {
       const error = await telegramResponse.json();
       console.error("[DailyIdea] Telegram API error:", error);
-      return res.status(500).json({ error: "Failed to send to Telegram", details: error });
+      return res
+        .status(500)
+        .json({ error: "Failed to send to Telegram", details: error });
     }
 
     console.log(`[DailyIdea] Idea sent successfully to chat ${chat_id}`);
@@ -75,4 +77,3 @@ export default async (req: any, res: any) => {
     });
   }
 };
-
