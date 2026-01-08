@@ -11,19 +11,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send /idea command to bot
+      - name: Generate and send daily idea
         env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.DAILY_IDEAS_CHAT_ID }}
+          VERCEL_URL: https://tokobot-five.vercel.app
         run: |
-          echo "Sending daily AI idea..."
+          echo "Generating daily AI idea..."
 
-          # Отправка команды /idea через Telegram Bot API
-          curl -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+          # Вызов endpoint для генерации и отправки идеи
+          RESPONSE=$(curl -X POST "${VERCEL_URL}/api/daily-idea" \
             -H "Content-Type: application/json" \
-            -d "{
-              \"chat_id\": \"${CHAT_ID}\",
-              \"text\": \"/idea\"
-            }"
+            -d "{\"chat_id\": \"${CHAT_ID}\"}" \
+            -w "\n%{http_code}" \
+            -s)
 
-          echo "Daily idea sent!"
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | head -n-1)
+
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "✅ Daily idea sent successfully!"
+            echo "$BODY" | jq .
+          else
+            echo "❌ Failed to send daily idea (HTTP $HTTP_CODE)"
+            echo "$BODY"
+            exit 1
+          fi
