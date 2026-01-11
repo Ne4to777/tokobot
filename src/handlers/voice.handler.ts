@@ -181,18 +181,38 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
     const downloadStart = Date.now();
 
     logger.info(`Getting file info for file_id: ${voice.file_id}`);
-    const file = await Promise.race([
-      ctx.telegram.getFile(voice.file_id),
+
+    // Используем fetch напрямую к Telegram API вместо ctx.telegram
+    const getFileResponse = await Promise.race([
+      fetch(
+        `https://api.telegram.org/bot${config.token}/getFile?file_id=${voice.file_id}`
+      ),
       new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("getFile timeout")), 5000)
       ),
     ]);
+
+    logger.info(`getFile response status: ${getFileResponse.status}`);
+
+    if (!getFileResponse.ok) {
+      throw new Error(`getFile failed: ${getFileResponse.status}`);
+    }
+
+    const fileData = (await getFileResponse.json()) as {
+      ok: boolean;
+      result?: { file_path?: string };
+    };
+    if (!fileData.ok || !fileData.result?.file_path) {
+      throw new Error("Invalid file response from Telegram");
+    }
+
+    const filePath = fileData.result.file_path;
     logger.info(
-      `File info obtained in ${Date.now() - downloadStart}ms: path=${file.file_path}`
+      `File info obtained in ${Date.now() - downloadStart}ms: path=${filePath}`
     );
 
     // Строим прямой URL к файлу
-    const fileUrl = `https://api.telegram.org/file/bot${config.token}/${file.file_path}`;
+    const fileUrl = `https://api.telegram.org/file/bot${config.token}/${filePath}`;
     logger.info(`Downloading from: ${fileUrl.substring(0, 50)}...`);
 
     let audioResponse: Response | undefined;
