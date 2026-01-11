@@ -179,43 +179,54 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
     // Шаг 1: Скачиваем голосовое сообщение
     logger.info("Step 1: Downloading audio...");
     const downloadStart = Date.now();
+    
+    logger.info(`Getting file link for file_id: ${voice.file_id}`);
     const fileLink = await ctx.telegram.getFileLink(voice.file_id);
-    logger.info(`File link: ${fileLink.href.substring(0, 50)}...`);
+    logger.info(`File link obtained in ${Date.now() - downloadStart}ms: ${fileLink.href.substring(0, 70)}...`);
 
     let audioResponse: Response | undefined;
     let lastError: Error | null = null;
 
     // Retry логика для загрузки аудио (3 попытки)
+    logger.info("Starting audio download retry loop...");
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
-        logger.info(`Download attempt ${attempt}/3`);
+        logger.info(`Download attempt ${attempt}/3 - fetching...`);
         audioResponse = await Promise.race([
           fetch(fileLink.href),
           new Promise<never>((_, reject) =>
             setTimeout(() => reject(new Error("Audio download timeout")), 15000)
           ),
         ]);
+        
+        logger.info(`Fetch completed with status: ${audioResponse.status}`);
 
         if (!audioResponse.ok) {
           throw new Error(`HTTP ${audioResponse.status}`);
         }
 
+        logger.info(`Audio fetched successfully on attempt ${attempt}`);
         break; // Успешно
       } catch (error) {
         lastError = error as Error;
         logger.warn(`Attempt ${attempt} failed: ${lastError.message}`);
         if (attempt < 3) {
+          logger.info(`Waiting 1 second before retry...`);
           await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
     }
 
+    logger.info("Retry loop finished, checking result...");
+    
     if (!audioResponse || lastError) {
+      logger.error(`All download attempts failed: ${lastError?.message}`);
       throw new Error(
         `download audio: ${lastError?.message || "unknown error"}`
       );
     }
 
+    logger.info("Converting response to buffer...");
     const audioBuffer = Buffer.from(await audioResponse.arrayBuffer());
     logger.info(
       `Audio downloaded in ${Date.now() - downloadStart}ms: ${audioBuffer.length} bytes`
