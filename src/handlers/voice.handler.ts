@@ -176,58 +176,56 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
     // Отправляем статус "печатает..." чтобы показать, что бот работает
     await ctx.sendChatAction("typing");
 
-    // Шаг 1: Скачиваем голосовое сообщение
+    // Шаг 1: Скачиваем голосовое сообщение напрямую через Bot API
     logger.info("Step 1: Downloading audio...");
     const downloadStart = Date.now();
 
-    logger.info(`Getting file link for file_id: ${voice.file_id}`);
-    const fileLink = await Promise.race([
-      ctx.telegram.getFileLink(voice.file_id),
+    logger.info(`Getting file info for file_id: ${voice.file_id}`);
+    const file = await Promise.race([
+      ctx.telegram.getFile(voice.file_id),
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("getFileLink timeout")), 10000)
+        setTimeout(() => reject(new Error("getFile timeout")), 5000)
       ),
     ]);
-    logger.info(
-      `File link obtained in ${Date.now() - downloadStart}ms: ${fileLink.href.substring(0, 70)}...`
-    );
+    logger.info(`File info obtained in ${Date.now() - downloadStart}ms: path=${file.file_path}`);
+
+    // Строим прямой URL к файлу
+    const fileUrl = `https://api.telegram.org/file/bot${config.token}/${file.file_path}`;
+    logger.info(`Downloading from: ${fileUrl.substring(0, 50)}...`);
 
     let audioResponse: Response | undefined;
     let lastError: Error | null = null;
 
-    // Retry логика для загрузки аудио (3 попытки)
-    logger.info("Starting audio download retry loop...");
-    for (let attempt = 1; attempt <= 3; attempt++) {
+    // Retry логика для загрузки аудио (2 попытки)
+    for (let attempt = 1; attempt <= 2; attempt++) {
       try {
-        logger.info(`Download attempt ${attempt}/3 - fetching...`);
+        logger.info(`Download attempt ${attempt}/2`);
         audioResponse = await Promise.race([
-          fetch(fileLink.href),
+          fetch(fileUrl),
           new Promise<never>((_, reject) =>
-            setTimeout(() => reject(new Error("Audio download timeout")), 15000)
+            setTimeout(() => reject(new Error("Download timeout")), 10000)
           ),
         ]);
-
+        
         logger.info(`Fetch completed with status: ${audioResponse.status}`);
 
         if (!audioResponse.ok) {
           throw new Error(`HTTP ${audioResponse.status}`);
         }
 
-        logger.info(`Audio fetched successfully on attempt ${attempt}`);
+        logger.info(`Audio downloaded successfully`);
         break; // Успешно
       } catch (error) {
         lastError = error as Error;
         logger.warn(`Attempt ${attempt} failed: ${lastError.message}`);
-        if (attempt < 3) {
-          logger.info(`Waiting 1 second before retry...`);
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+        if (attempt < 2) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
         }
       }
     }
-
-    logger.info("Retry loop finished, checking result...");
-
+    
     if (!audioResponse || lastError) {
-      logger.error(`All download attempts failed: ${lastError?.message}`);
+      logger.error(`Download failed: ${lastError?.message}`);
       throw new Error(
         `download audio: ${lastError?.message || "unknown error"}`
       );
