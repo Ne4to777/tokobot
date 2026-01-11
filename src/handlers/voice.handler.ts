@@ -5,6 +5,10 @@
 
 import { config, Constants } from "../config/index.js";
 import { recognizeSpeech } from "../services/yandex-stt.service.js";
+import {
+  generateImage,
+  buildImagePrompt,
+} from "../services/yandex-art.service.js";
 import { BotContext } from "../types/index.js";
 import { createLogger } from "../utils/logger.js";
 
@@ -294,8 +298,43 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
     ]);
     logger.info(`Idea generated in ${Date.now() - ideaStart}ms`);
 
-    // Отправляем только финальный ответ с идеей
-    await ctx.reply(`💡 ${idea}`);
+    // Шаг 4: Генерируем изображение для идеи
+    logger.info("Step 4: Generating image...");
+    const imageStart = Date.now();
+    
+    let imageBuffer: Buffer | null = null;
+    try {
+      const imagePrompt = buildImagePrompt(idea);
+      logger.info(`Image prompt: "${imagePrompt.substring(0, 50)}..."`);
+      
+      imageBuffer = await Promise.race([
+        generateImage({
+          apiKey: config.yandexApiKey!,
+          folderId: config.yandexFolderId!,
+          prompt: imagePrompt,
+        }),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Image generation timeout")), 60000)
+        ),
+      ]);
+      
+      logger.info(`Image generated in ${Date.now() - imageStart}ms`);
+    } catch (error) {
+      logger.warn("Failed to generate image, sending text only", error as Error);
+      // Продолжаем без изображения
+    }
+
+    // Отправляем ответ: текст + изображение (если есть)
+    if (imageBuffer) {
+      await ctx.replyWithPhoto(
+        { source: imageBuffer },
+        { caption: `💡 ${idea}` }
+      );
+      logger.info("Sent idea with image");
+    } else {
+      await ctx.reply(`💡 ${idea}`);
+      logger.info("Sent idea without image");
+    }
 
     logger.info(
       `Voice message processed successfully in ${Date.now() - startTime}ms`
