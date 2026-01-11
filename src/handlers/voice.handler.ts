@@ -173,20 +173,44 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
     logger.info("Step 1: Downloading audio...");
     const downloadStart = Date.now();
     const fileLink = await ctx.telegram.getFileLink(voice.file_id);
-    
-    const audioResponse = await Promise.race([
-      fetch(fileLink.href),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Audio download timeout")), 10000)
-      ),
-    ]);
+    logger.info(`File link: ${fileLink.href.substring(0, 50)}...`);
 
-    if (!audioResponse.ok) {
-      throw new Error(`Failed to download audio: ${audioResponse.status}`);
+    let audioResponse: Response | undefined;
+    let lastError: Error | null = null;
+    
+    // Retry логика для загрузки аудио (3 попытки)
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        logger.info(`Download attempt ${attempt}/3`);
+        audioResponse = await Promise.race([
+          fetch(fileLink.href),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error("Audio download timeout")), 15000)
+          ),
+        ]);
+        
+        if (!audioResponse.ok) {
+          throw new Error(`HTTP ${audioResponse.status}`);
+        }
+        
+        break; // Успешно
+      } catch (error) {
+        lastError = error as Error;
+        logger.warn(`Attempt ${attempt} failed: ${lastError.message}`);
+        if (attempt < 3) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+    }
+    
+    if (!audioResponse || lastError) {
+      throw new Error(`download audio: ${lastError?.message || 'unknown error'}`);
     }
 
     const audioBuffer = Buffer.from(await audioResponse.arrayBuffer());
-    logger.info(`Audio downloaded in ${Date.now() - downloadStart}ms: ${audioBuffer.length} bytes`);
+    logger.info(
+      `Audio downloaded in ${Date.now() - downloadStart}ms: ${audioBuffer.length} bytes`
+    );
 
     // Шаг 2: Распознаем речь
     logger.info("Step 2: Recognizing speech...");
@@ -204,7 +228,9 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
       ),
     ]);
 
-    logger.info(`Speech recognized in ${Date.now() - sttStart}ms: "${recognizedText}"`);
+    logger.info(
+      `Speech recognized in ${Date.now() - sttStart}ms: "${recognizedText}"`
+    );
 
     // Проверяем, адресовано ли сообщение боту
     // Бот реагирует ТОЛЬКО на фразу "придумай идею"
@@ -227,7 +253,9 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
     // Отправляем только финальный ответ с идеей
     await ctx.reply(`💡 ${idea}`);
 
-    logger.info(`Voice message processed successfully in ${Date.now() - startTime}ms`);
+    logger.info(
+      `Voice message processed successfully in ${Date.now() - startTime}ms`
+    );
   } catch (error) {
     logger.error("Error processing voice message", error as Error);
 
