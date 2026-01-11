@@ -142,134 +142,38 @@ export async function generateImage(
 }
 
 /**
- * Извлекает и обобщает ключевые слова из идеи до безопасных категорий
- */
-function extractSafeKeywords(idea: string): string {
-  const ideLower = idea.toLowerCase();
-
-  // Технологии AI (безопасные термины)
-  const aiTech: string[] = [];
-  if (
-    ideLower.includes("зрени") ||
-    ideLower.includes("распознав") ||
-    ideLower.includes("детекц")
-  ) {
-    aiTech.push("компьютерное зрение");
-  }
-  if (
-    ideLower.includes("языков") ||
-    ideLower.includes("текст") ||
-    ideLower.includes("gpt")
-  ) {
-    aiTech.push("обработка языка");
-  }
-  if (
-    ideLower.includes("голос") ||
-    ideLower.includes("речь") ||
-    ideLower.includes("аудио")
-  ) {
-    aiTech.push("голосовые технологии");
-  }
-  if (
-    ideLower.includes("данны") ||
-    ideLower.includes("аналитик") ||
-    ideLower.includes("прогноз")
-  ) {
-    aiTech.push("анализ данных");
-  }
-
-  // Сферы (обобщенные, безопасные)
-  const sphere: string[] = [];
-  if (
-    ideLower.includes("образован") ||
-    ideLower.includes("обучен") ||
-    ideLower.includes("школ") ||
-    ideLower.includes("студент")
-  ) {
-    sphere.push("образование");
-  }
-  if (
-    ideLower.includes("торгов") ||
-    ideLower.includes("магазин") ||
-    ideLower.includes("продаж")
-  ) {
-    sphere.push("розничная сфера");
-  }
-  if (
-    ideLower.includes("производств") ||
-    ideLower.includes("завод") ||
-    ideLower.includes("фабрик")
-  ) {
-    sphere.push("производство");
-  }
-  if (
-    ideLower.includes("логистик") ||
-    ideLower.includes("доставк") ||
-    ideLower.includes("склад")
-  ) {
-    sphere.push("логистика");
-  }
-  if (
-    ideLower.includes("здоровь") ||
-    ideLower.includes("медицин") ||
-    ideLower.includes("клиник")
-  ) {
-    sphere.push("здравоохранение");
-  }
-
-  // Формируем описание
-  let description = "";
-  if (aiTech.length > 0) {
-    description += aiTech[0];
-  }
-  if (sphere.length > 0) {
-    description += (description ? " для сферы " : "") + sphere[0];
-  }
-
-  return description;
-}
-
-/**
  * Создает промпт для изображения на основе бизнес-идеи
  * Лимит YandexART: 500 символов
- * Извлекает ключевые слова но обобщает их до безопасных категорий
  */
 export function buildImagePrompt(idea: string): string {
-  // Извлекаем безопасные ключевые слова
-  const keywords = extractSafeKeywords(idea);
+  // Извлекаем только ПРОБЛЕМУ из идеи
+  const problemMatch = idea.match(/🎯\s*ПРОБЛЕМА:\s*([^\n]+)/);
+  const problem = problemMatch ? problemMatch[1].substring(0, 200) : "";
 
-  // Базовые стили
-  const styles = [
-    "Современная минималистичная бизнес-иллюстрация",
-    "Футуристическая концепция стартапа",
-    "Концептуальная технологическая иллюстрация",
-    "Абстрактная digital-визуализация",
-  ];
+  // Извлекаем РЕШЕНИЕ
+  const solutionMatch = idea.match(/💡\s*РЕШЕНИЕ:\s*([^\n]+)/);
+  const solution = solutionMatch ? solutionMatch[1].substring(0, 150) : "";
 
-  const endings = [
-    "профессиональный дизайн, светлые тона",
-    "корпоративный стиль, чистые формы",
-    "минимализм, технологичный вид",
-    "деловая графика, современный стиль",
-  ];
+  // Формируем короткий промпт
+  let prompt = "Современная бизнес иллюстрация: ";
 
-  // Выбираем случайный стиль
-  const styleIndex = Math.floor(Math.random() * styles.length);
-  const endingIndex = Math.floor(Math.random() * endings.length);
-
-  let prompt = styles[styleIndex];
-
-  // Добавляем ключевые слова если есть
-  if (keywords) {
-    prompt += ` с элементами ${keywords},`;
-  } else {
-    prompt += " с AI элементами,";
+  if (problem) {
+    prompt += problem.substring(0, 180) + ". ";
   }
 
-  prompt += ` ${endings[endingIndex]}`;
+  if (solution) {
+    prompt += solution.substring(0, 150);
+  }
 
-  logger.info(
-    `Image prompt with keywords: "${keywords || "none"}", length: ${prompt.length} chars`
-  );
+  // Если ничего не извлекли - берем начало идеи
+  if (!problem && !solution) {
+    const firstLine = idea.split("\n")[0];
+    prompt += firstLine.substring(0, 300);
+  }
+
+  // Обрезаем до 450 символов для надежности
+  prompt = prompt.substring(0, 450);
+
+  logger.info(`Image prompt length: ${prompt.length} chars`);
   return prompt;
 }
