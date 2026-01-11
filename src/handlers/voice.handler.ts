@@ -327,16 +327,14 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
       // Продолжаем без изображения
     }
 
-    // Отправляем ответ: текст + изображение (если есть)
+    // Отправляем ответ: изображение с текстом идеи
     if (imageBuffer) {
-      // Отправляем фото с короткой подписью
+      // Фото с полным текстом идеи в caption
       await ctx.replyWithPhoto(
         { source: imageBuffer },
-        { caption: "💡 AI-first бизнес идея для вашего запроса" }
+        { caption: `💡 ${idea}` }
       );
-      // Отправляем полный текст идеи отдельным сообщением
-      await ctx.reply(idea);
-      logger.info("Sent idea with image and text");
+      logger.info("Sent idea with image");
     } else {
       await ctx.reply(`💡 ${idea}`);
       logger.info("Sent idea without image");
