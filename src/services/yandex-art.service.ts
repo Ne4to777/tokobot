@@ -142,24 +142,134 @@ export async function generateImage(
 }
 
 /**
+ * Извлекает и обобщает ключевые слова из идеи до безопасных категорий
+ */
+function extractSafeKeywords(idea: string): string {
+  const ideLower = idea.toLowerCase();
+
+  // Технологии AI (безопасные термины)
+  const aiTech: string[] = [];
+  if (
+    ideLower.includes("зрени") ||
+    ideLower.includes("распознав") ||
+    ideLower.includes("детекц")
+  ) {
+    aiTech.push("компьютерное зрение");
+  }
+  if (
+    ideLower.includes("языков") ||
+    ideLower.includes("текст") ||
+    ideLower.includes("gpt")
+  ) {
+    aiTech.push("обработка языка");
+  }
+  if (
+    ideLower.includes("голос") ||
+    ideLower.includes("речь") ||
+    ideLower.includes("аудио")
+  ) {
+    aiTech.push("голосовые технологии");
+  }
+  if (
+    ideLower.includes("данны") ||
+    ideLower.includes("аналитик") ||
+    ideLower.includes("прогноз")
+  ) {
+    aiTech.push("анализ данных");
+  }
+
+  // Сферы (обобщенные, безопасные)
+  const sphere: string[] = [];
+  if (
+    ideLower.includes("образован") ||
+    ideLower.includes("обучен") ||
+    ideLower.includes("школ") ||
+    ideLower.includes("студент")
+  ) {
+    sphere.push("образование");
+  }
+  if (
+    ideLower.includes("торгов") ||
+    ideLower.includes("магазин") ||
+    ideLower.includes("продаж")
+  ) {
+    sphere.push("розничная сфера");
+  }
+  if (
+    ideLower.includes("производств") ||
+    ideLower.includes("завод") ||
+    ideLower.includes("фабрик")
+  ) {
+    sphere.push("производство");
+  }
+  if (
+    ideLower.includes("логистик") ||
+    ideLower.includes("доставк") ||
+    ideLower.includes("склад")
+  ) {
+    sphere.push("логистика");
+  }
+  if (
+    ideLower.includes("здоровь") ||
+    ideLower.includes("медицин") ||
+    ideLower.includes("клиник")
+  ) {
+    sphere.push("здравоохранение");
+  }
+
+  // Формируем описание
+  let description = "";
+  if (aiTech.length > 0) {
+    description += aiTech[0];
+  }
+  if (sphere.length > 0) {
+    description += (description ? " для сферы " : "") + sphere[0];
+  }
+
+  return description;
+}
+
+/**
  * Создает промпт для изображения на основе бизнес-идеи
  * Лимит YandexART: 500 символов
- * Использует абстрактный стиль чтобы избежать контент-фильтров
+ * Извлекает ключевые слова но обобщает их до безопасных категорий
  */
 export function buildImagePrompt(idea: string): string {
-  // Список безопасных абстрактных промптов для бизнеса
-  const prompts = [
-    "Современная минималистичная бизнес-иллюстрация с AI элементами, технологичный стиль, голубые и белые тона, профессиональный дизайн",
-    "Футуристическая концепция стартапа, абстрактные геометрические формы, AI тематика, светлые цвета, корпоративный стиль",
-    "Концептуальная иллюстрация технологического решения, современный минимализм, искусственный интеллект, деловой стиль",
-    "Абстрактная визуализация digital-бизнеса, AI технологии, минималистичный дизайн, профессиональная графика",
-    "Современная инфографика для стартапа, AI концепция, чистый дизайн, корпоративные цвета, технологичный вид"
+  // Извлекаем безопасные ключевые слова
+  const keywords = extractSafeKeywords(idea);
+
+  // Базовые стили
+  const styles = [
+    "Современная минималистичная бизнес-иллюстрация",
+    "Футуристическая концепция стартапа",
+    "Концептуальная технологическая иллюстрация",
+    "Абстрактная digital-визуализация",
   ];
-  
-  // Выбираем случайный промпт для разнообразия
-  const randomIndex = Math.floor(Math.random() * prompts.length);
-  const prompt = prompts[randomIndex];
-  
-  logger.info(`Using safe abstract prompt #${randomIndex + 1}, length: ${prompt.length} chars`);
+
+  const endings = [
+    "профессиональный дизайн, светлые тона",
+    "корпоративный стиль, чистые формы",
+    "минимализм, технологичный вид",
+    "деловая графика, современный стиль",
+  ];
+
+  // Выбираем случайный стиль
+  const styleIndex = Math.floor(Math.random() * styles.length);
+  const endingIndex = Math.floor(Math.random() * endings.length);
+
+  let prompt = styles[styleIndex];
+
+  // Добавляем ключевые слова если есть
+  if (keywords) {
+    prompt += ` с элементами ${keywords},`;
+  } else {
+    prompt += " с AI элементами,";
+  }
+
+  prompt += ` ${endings[endingIndex]}`;
+
+  logger.info(
+    `Image prompt with keywords: "${keywords || "none"}", length: ${prompt.length} chars`
+  );
   return prompt;
 }
