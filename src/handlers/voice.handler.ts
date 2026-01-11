@@ -132,6 +132,7 @@ function buildVoicePrompt(userRequest: string): string {
  * 3. Генерирует бизнес-идею на основе распознанного текста
  */
 export async function voiceHandler(ctx: BotContext): Promise<void> {
+  const startTime = Date.now();
   try {
     // Check if message has voice
     if (!ctx.message || !("voice" in ctx.message)) {
@@ -169,26 +170,41 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
     await ctx.sendChatAction("typing");
 
     // Шаг 1: Скачиваем голосовое сообщение
+    logger.info("Step 1: Downloading audio...");
+    const downloadStart = Date.now();
     const fileLink = await ctx.telegram.getFileLink(voice.file_id);
-    const audioResponse = await fetch(fileLink.href);
+    
+    const audioResponse = await Promise.race([
+      fetch(fileLink.href),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Audio download timeout")), 10000)
+      ),
+    ]);
 
     if (!audioResponse.ok) {
       throw new Error(`Failed to download audio: ${audioResponse.status}`);
     }
 
     const audioBuffer = Buffer.from(await audioResponse.arrayBuffer());
-    logger.info(`Audio downloaded: ${audioBuffer.length} bytes`);
+    logger.info(`Audio downloaded in ${Date.now() - downloadStart}ms: ${audioBuffer.length} bytes`);
 
     // Шаг 2: Распознаем речь
-    const recognizedText = await recognizeSpeech({
-      apiKey: config.yandexApiKey!,
-      folderId: config.yandexFolderId!,
-      audioBuffer,
-      languageCode: "ru-RU",
-      format: "oggopus",
-    });
+    logger.info("Step 2: Recognizing speech...");
+    const sttStart = Date.now();
+    const recognizedText = await Promise.race([
+      recognizeSpeech({
+        apiKey: config.yandexApiKey!,
+        folderId: config.yandexFolderId!,
+        audioBuffer,
+        languageCode: "ru-RU",
+        format: "oggopus",
+      }),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("STT timeout")), 15000)
+      ),
+    ]);
 
-    logger.info(`Recognized text: "${recognizedText}"`);
+    logger.info(`Speech recognized in ${Date.now() - sttStart}ms: "${recognizedText}"`);
 
     // Проверяем, адресовано ли сообщение боту
     // Бот реагирует ТОЛЬКО на фразу "придумай идею"
@@ -198,12 +214,20 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
     }
 
     // Шаг 3: Генерируем бизнес-идею на основе голосового запроса
-    const idea = await generateIdeaFromVoice(recognizedText);
+    logger.info("Step 3: Generating idea...");
+    const ideaStart = Date.now();
+    const idea = await Promise.race([
+      generateIdeaFromVoice(recognizedText),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Idea generation timeout")), 20000)
+      ),
+    ]);
+    logger.info(`Idea generated in ${Date.now() - ideaStart}ms`);
 
     // Отправляем только финальный ответ с идеей
     await ctx.reply(`💡 ${idea}`);
 
-    logger.info("Voice message processed successfully");
+    logger.info(`Voice message processed successfully in ${Date.now() - startTime}ms`);
   } catch (error) {
     logger.error("Error processing voice message", error as Error);
 
