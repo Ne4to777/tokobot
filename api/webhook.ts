@@ -50,6 +50,11 @@ bot.on("text", handleContactFlow);
 
 // Handle unknown commands
 bot.on("message", async (ctx) => {
+  // Игнорируем голосовые сообщения - они обрабатываются отдельно
+  if (ctx.message && "voice" in ctx.message) {
+    return;
+  }
+
   await ctx.reply(
     "❓ Команда не распознана.\n\n" +
       "Используйте /help чтобы увидеть список доступных команд."
