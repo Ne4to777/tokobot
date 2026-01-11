@@ -52,6 +52,9 @@ export function getConfig(): BotConfig {
   console.log(
     `🤖 AI Provider: ${aiProvider}, Token: ${aiToken ? "✅ SET" : "❌ NOT SET"}`
   );
+  console.log(
+    `🔑 Yandex STT: API Key ${process.env.YANDEX_API_KEY ? "✅ SET" : "❌ NOT SET"}, Folder ID ${process.env.YANDEX_FOLDER_ID ? "✅ SET" : "❌ NOT SET"}`
+  );
 
   return {
     token: process.env.BOT_TOKEN!,
