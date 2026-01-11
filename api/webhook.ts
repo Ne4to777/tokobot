@@ -78,6 +78,9 @@ bot.catch((error, ctx) => {
 export default async (req: any, res: any) => {
   try {
     if (req.method === "POST") {
+      // Log incoming webhook
+      console.log("📥 Webhook received:", JSON.stringify(req.body, null, 2));
+      
       // Handle Telegram webhook (removed timeout - let error handlers catch issues)
       await bot.handleUpdate(req.body, res);
 
