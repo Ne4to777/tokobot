@@ -177,7 +177,7 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
 
     let audioResponse: Response | undefined;
     let lastError: Error | null = null;
-    
+
     // Retry логика для загрузки аудио (3 попытки)
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
@@ -188,23 +188,25 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
             setTimeout(() => reject(new Error("Audio download timeout")), 15000)
           ),
         ]);
-        
+
         if (!audioResponse.ok) {
           throw new Error(`HTTP ${audioResponse.status}`);
         }
-        
+
         break; // Успешно
       } catch (error) {
         lastError = error as Error;
         logger.warn(`Attempt ${attempt} failed: ${lastError.message}`);
         if (attempt < 3) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
       }
     }
-    
+
     if (!audioResponse || lastError) {
-      throw new Error(`download audio: ${lastError?.message || 'unknown error'}`);
+      throw new Error(
+        `download audio: ${lastError?.message || "unknown error"}`
+      );
     }
 
     const audioBuffer = Buffer.from(await audioResponse.arrayBuffer());
