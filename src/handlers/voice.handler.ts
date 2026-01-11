@@ -4,11 +4,11 @@
  */
 
 import { config, Constants } from "../config/index.js";
-import { recognizeSpeech } from "../services/yandex-stt.service.js";
 import {
-  generateImage,
   buildImagePrompt,
+  generateImage,
 } from "../services/yandex-art.service.js";
+import { recognizeSpeech } from "../services/yandex-stt.service.js";
 import { BotContext } from "../types/index.js";
 import { createLogger } from "../utils/logger.js";
 
@@ -301,12 +301,12 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
     // Шаг 4: Генерируем изображение для идеи
     logger.info("Step 4: Generating image...");
     const imageStart = Date.now();
-    
+
     let imageBuffer: Buffer | null = null;
     try {
       const imagePrompt = buildImagePrompt(idea);
       logger.info(`Image prompt: "${imagePrompt.substring(0, 50)}..."`);
-      
+
       imageBuffer = await Promise.race([
         generateImage({
           apiKey: config.yandexApiKey!,
@@ -317,20 +317,26 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
           setTimeout(() => reject(new Error("Image generation timeout")), 60000)
         ),
       ]);
-      
+
       logger.info(`Image generated in ${Date.now() - imageStart}ms`);
     } catch (error) {
-      logger.warn("Failed to generate image, sending text only", error as Error);
+      logger.warn(
+        "Failed to generate image, sending text only",
+        error as Error
+      );
       // Продолжаем без изображения
     }
 
     // Отправляем ответ: текст + изображение (если есть)
     if (imageBuffer) {
+      // Отправляем фото с короткой подписью
       await ctx.replyWithPhoto(
         { source: imageBuffer },
-        { caption: `💡 ${idea}` }
+        { caption: "💡 AI-first бизнес идея для вашего запроса" }
       );
-      logger.info("Sent idea with image");
+      // Отправляем полный текст идеи отдельным сообщением
+      await ctx.reply(idea);
+      logger.info("Sent idea with image and text");
     } else {
       await ctx.reply(`💡 ${idea}`);
       logger.info("Sent idea without image");
