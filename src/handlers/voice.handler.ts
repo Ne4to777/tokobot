@@ -282,7 +282,7 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
       logger.info("Voice message not addressed to bot, ignoring silently");
       return;
     }
-    
+
     // Если прошли проверку - отправляем статус что начали обработку
     await ctx.reply("🎤 Генерирую идею...");
 
