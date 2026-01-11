@@ -60,6 +60,7 @@ export function getConfig(): BotConfig {
     aiEnabled: !!aiToken,
     aiToken,
     aiProvider,
+    yandexApiKey: process.env.YANDEX_API_KEY, // Отдельный ключ для Yandex services
     yandexFolderId: process.env.YANDEX_FOLDER_ID,
     bitrix24Webhook: process.env.BITRIX24_WEBHOOK,
   };

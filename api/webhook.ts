@@ -22,6 +22,7 @@ import {
   helpHandler,
   ideaHandler,
   startHandler,
+  voiceHandler,
 } from "../src/handlers/index.js";
 
 const logger = createLogger("Webhook");
@@ -40,6 +41,9 @@ bot.command("start", startHandler);
 bot.command("help", helpHandler);
 bot.command("idea", ideaHandler);
 bot.command("contact", contactHandler);
+
+// Handle voice messages
+bot.on("voice", voiceHandler);
 
 // Handle text messages (for contact flow)
 bot.on("text", handleContactFlow);

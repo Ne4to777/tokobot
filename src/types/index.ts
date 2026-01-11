@@ -73,6 +73,7 @@ export interface BotConfig {
   aiEnabled: boolean;
   aiToken?: string;
   aiProvider: "yandexgpt" | "groq" | "gemini" | "huggingface";
+  yandexApiKey?: string; // Отдельный ключ для Yandex services (SpeechKit, YandexGPT)
   yandexFolderId?: string;
   bitrix24Webhook?: string;
 }
