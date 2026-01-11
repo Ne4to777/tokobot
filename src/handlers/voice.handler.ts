@@ -179,10 +179,17 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
     // Шаг 1: Скачиваем голосовое сообщение
     logger.info("Step 1: Downloading audio...");
     const downloadStart = Date.now();
-    
+
     logger.info(`Getting file link for file_id: ${voice.file_id}`);
-    const fileLink = await ctx.telegram.getFileLink(voice.file_id);
-    logger.info(`File link obtained in ${Date.now() - downloadStart}ms: ${fileLink.href.substring(0, 70)}...`);
+    const fileLink = await Promise.race([
+      ctx.telegram.getFileLink(voice.file_id),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("getFileLink timeout")), 10000)
+      ),
+    ]);
+    logger.info(
+      `File link obtained in ${Date.now() - downloadStart}ms: ${fileLink.href.substring(0, 70)}...`
+    );
 
     let audioResponse: Response | undefined;
     let lastError: Error | null = null;
@@ -198,7 +205,7 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
             setTimeout(() => reject(new Error("Audio download timeout")), 15000)
           ),
         ]);
-        
+
         logger.info(`Fetch completed with status: ${audioResponse.status}`);
 
         if (!audioResponse.ok) {
@@ -218,7 +225,7 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
     }
 
     logger.info("Retry loop finished, checking result...");
-    
+
     if (!audioResponse || lastError) {
       logger.error(`All download attempts failed: ${lastError?.message}`);
       throw new Error(
