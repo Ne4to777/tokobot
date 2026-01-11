@@ -5,6 +5,7 @@
 ### 1. Через веб-интерфейс
 
 **Проверка на каталоге:**
+
 1. [console.cloud.yandex.ru](https://console.cloud.yandex.ru/)
 2. Каталоги → ваш каталог `b1g0039n255v028lq8c1`
 3. Вкладка "Права доступа"
@@ -16,6 +17,7 @@
    ```
 
 **Проверка на сервисном аккаунте:**
+
 1. Сервисные аккаунты → `cloud-a-s-aleksejev`
 2. Вкладка "Роли" или "Права доступа"
 3. Здесь могут быть другие роли (например, `resource-manager.clouds.owner`)
@@ -46,10 +48,12 @@ cd /Users/nybble/projects/tokobot
 ## Правильная структура ролей
 
 ### На КАТАЛОГЕ (b1g0039n255v028lq8c1):
+
 - ✅ `ai.speechkit-stt.user` → сервисный аккаунт `cloud-a-s-aleksejev`
 - ✅ `ai.languageModels.user` → сервисный аккаунт `cloud-a-s-aleksejev`
 
 ### На ОБЛАКЕ (cloud-alekseev):
+
 - ✅ `resource-manager.clouds.owner` → ваш личный аккаунт
 - (опционально) другие административные роли
 
@@ -58,12 +62,14 @@ cd /Users/nybble/projects/tokobot
 1. **Подождите 1-2 минуты** (роли применяются с задержкой)
 
 2. **Перезапустите тест:**
+
    ```bash
    cd /Users/nybble/projects/tokobot
    ./scripts/test-yandex-stt-direct.sh
    ```
 
 3. **Если тест показал ✅** - запустите бота:
+
    ```bash
    npm run dev
    ```
