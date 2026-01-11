@@ -146,12 +146,15 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
     );
 
     // Проверяем наличие необходимых API ключей
+    logger.info(`Checking Yandex credentials: apiKey=${config.yandexApiKey ? 'SET' : 'NOT SET'}, folderId=${config.yandexFolderId ? 'SET' : 'NOT SET'}`);
+    
     if (!config.yandexApiKey || !config.yandexFolderId) {
+      logger.error(`Missing Yandex credentials: apiKey=${!!config.yandexApiKey}, folderId=${!!config.yandexFolderId}`);
       await ctx.reply(
         "❌ Голосовые сообщения недоступны: не настроены Yandex API ключи.\n\n" +
           "Для работы с голосовыми сообщениями требуются:\n" +
-          "• YANDEX_API_KEY\n" +
-          "• YANDEX_FOLDER_ID\n\n" +
+          `• YANDEX_API_KEY ${config.yandexApiKey ? '✅' : '❌'}\n` +
+          `• YANDEX_FOLDER_ID ${config.yandexFolderId ? '✅' : '❌'}\n\n` +
           "Текущие команды работают: /idea, /help"
       );
       return;
