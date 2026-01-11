@@ -187,7 +187,9 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
         setTimeout(() => reject(new Error("getFile timeout")), 5000)
       ),
     ]);
-    logger.info(`File info obtained in ${Date.now() - downloadStart}ms: path=${file.file_path}`);
+    logger.info(
+      `File info obtained in ${Date.now() - downloadStart}ms: path=${file.file_path}`
+    );
 
     // Строим прямой URL к файлу
     const fileUrl = `https://api.telegram.org/file/bot${config.token}/${file.file_path}`;
@@ -206,7 +208,7 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
             setTimeout(() => reject(new Error("Download timeout")), 10000)
           ),
         ]);
-        
+
         logger.info(`Fetch completed with status: ${audioResponse.status}`);
 
         if (!audioResponse.ok) {
@@ -223,7 +225,7 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
         }
       }
     }
-    
+
     if (!audioResponse || lastError) {
       logger.error(`Download failed: ${lastError?.message}`);
       throw new Error(
