@@ -173,7 +173,10 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
       return;
     }
 
-    // Отправляем статус "печатает..." чтобы показать, что бот работает
+    // Сразу отвечаем пользователю чтобы не потерять соединение
+    await ctx.reply("🎤 Обрабатываю голосовое сообщение...");
+
+    // Отправляем статус "печатает..."
     await ctx.sendChatAction("typing");
 
     // Шаг 1: Скачиваем голосовое сообщение напрямую через Bot API
@@ -182,13 +185,13 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
 
     logger.info(`Getting file info for file_id: ${voice.file_id}`);
 
-    // Используем fetch напрямую к Telegram API вместо ctx.telegram
+    // Используем fetch напрямую к Telegram API с увеличенным таймаутом
     const getFileResponse = await Promise.race([
       fetch(
         `https://api.telegram.org/bot${config.token}/getFile?file_id=${voice.file_id}`
       ),
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("getFile timeout")), 5000)
+        setTimeout(() => reject(new Error("getFile timeout after 15s")), 15000)
       ),
     ]);
 
@@ -283,6 +286,9 @@ export async function voiceHandler(ctx: BotContext): Promise<void> {
     // Бот реагирует ТОЛЬКО на фразу "придумай идею"
     if (!isAddressedToBot(recognizedText)) {
       logger.info("Voice message not addressed to bot, ignoring silently");
+      await ctx.reply(
+        'Чтобы я сгенерировал идею, начните голосовое с фразы: "Придумай идею..."'
+      );
       return;
     }
 
