@@ -50,8 +50,18 @@ bot.on("text", handleContactFlow);
 
 // Handle unknown commands
 bot.on("message", async (ctx) => {
-  // Игнорируем голосовые сообщения - они обрабатываются отдельно
-  if (ctx.message && "voice" in ctx.message) {
+  // Игнорируем все медиа-сообщения - они не требуют ответа
+  if (
+    ctx.message &&
+    ("voice" in ctx.message ||
+      "photo" in ctx.message ||
+      "video" in ctx.message ||
+      "audio" in ctx.message ||
+      "document" in ctx.message ||
+      "sticker" in ctx.message ||
+      "animation" in ctx.message ||
+      "video_note" in ctx.message)
+  ) {
     return;
   }
 
